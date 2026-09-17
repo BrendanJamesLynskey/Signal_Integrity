@@ -26,6 +26,10 @@ Eleven interactive slide decks on getting a signal from one chip to another inta
 
 **130 slides across eleven decks.** Single-page HTML, KaTeX-rendered maths, no build step — open any `index.html` directly.
 
+## Long-form companion
+
+The same material as a written report: [Signal_Integrity.pdf](Signal_Integrity.pdf) (22 pp). It carries the continuous argument where the decks carry the interactive models, and it is generated from the same computations, so a number cannot differ between the two.
+
 ---
 
 ## Verified against published work
