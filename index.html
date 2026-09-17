@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Signal Integrity &amp; High-Speed Digital Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg:#0a0a0f; --surface:#131318; --border:#23232a; --text:#d4d4d8;
+          --text2:#a1a1aa; --dim:#71717a; --accent:#22d3ee; --green:#10b981;
+          --purple:#8b5cf6; --blue:#60a5fa; --red:#ef4444; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text);
+         line-height:1.6; min-height:100vh; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { color: #93c5fd; }
+  .container { max-width: 980px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  header .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  header h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:2.6rem;
+              letter-spacing:-0.02em; color:#fafafa; margin-bottom:0.3rem; line-height:1.1; }
+  header .subtitle { font-size:1rem; color:var(--accent); font-weight:500;
+                     letter-spacing:0.15em; text-transform:uppercase; margin-bottom:1rem; }
+  header p { color: var(--text2); max-width: 680px; margin: 0 auto 0.8rem;
+             font-size: 0.95rem; }
+  .grid { display: flex; flex-direction: column; gap: 1rem; }
+  .card { display:grid; grid-template-columns:56px 1fr auto; align-items:center;
+          gap:1.2rem; background:var(--surface); border:1px solid var(--border);
+          border-radius:10px; padding:1.25rem 1.5rem;
+          transition:border-color .2s, box-shadow .2s; }
+  .card:hover { border-color: rgba(34,211,238,.3); box-shadow: 0 0 20px rgba(34,211,238,.06); }
+  .card .num { font-family:'Playfair Display',serif; font-weight:900; font-size:1.8rem;
+               text-align:center; line-height:1; }
+  .card .info h2 { font-family:'Playfair Display',serif; font-weight:700; font-size:1.15rem;
+                   color:#fafafa; margin-bottom:0.2rem; }
+  .card .info p { font-size:0.82rem; color:var(--dim); line-height:1.4; }
+  .card .action { text-align:right; white-space:nowrap; display:flex;
+                  flex-direction:column; align-items:flex-end; gap:0.4rem; }
+  .btn { display:inline-block; padding:0.45em 1.3em; border-radius:6px; font-weight:700;
+         font-size:0.85rem; transition:background .2s, transform .1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-launch { background: var(--accent); color:#0a0a0f; }
+  .btn-launch:hover { background:#67e8f9; color:#0a0a0f; }
+  .badge { display:inline-block; padding:0.25em 0.8em; border-radius:999px;
+           font-size:0.72rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .badge-complete { background:rgba(16,185,129,.12); color:var(--green);
+                    border:1px solid rgba(16,185,129,.25); }
+  .section-title { font-family:'Playfair Display',serif; font-size:1.3rem; color:#fafafa;
+                   margin:2.5rem 0 0.9rem; }
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:10px;
+           padding:1.25rem 1.5rem; font-size:0.9rem; color:var(--text2); }
+  .panel ul { margin:0.5rem 0 0 1.1rem; }
+  .panel li { margin-bottom:0.35rem; }
+  table { width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:0.5rem; }
+  th { text-align:left; color:var(--accent); font-weight:700; padding:0.5rem 0.7rem;
+       border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace;
+       font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; }
+  td { padding:0.45rem 0.7rem; border-bottom:1px solid var(--border); color:var(--text2);
+       vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  .ok { color: var(--green); font-family:'JetBrains Mono',monospace; }
+  footer { text-align:center; margin-top:3rem; padding-top:1.5rem;
+           border-top:1px solid var(--border); font-size:0.82rem; color:var(--dim); }
+  footer a { color: var(--dim); }
+  footer a:hover { color: var(--text2); }
+  @media (max-width:600px){ .card{grid-template-columns:40px 1fr;gap:0.8rem}
+    .card .action{grid-column:1/-1;text-align:left;align-items:flex-start}
+    header h1{font-size:1.9rem} .container{padding:2rem 1rem 3rem} }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="icon">⬡</div>
+  <div class="subtitle">Computed, interactive, verified</div>
+  <h1>Signal Integrity &amp; High-Speed Digital Design</h1>
+  <p>Eleven decks on getting a signal from one chip to another intact &mdash; the physics
+  of the channel, the mechanisms that close an eye, and the arithmetic a standard uses to
+  decide a channel is legal.</p>
+  <p>Every number on every slide is computed by a model in
+  <a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">si_models</a> and
+  embedded as data. Nothing is asserted by hand, and the models are checked against
+  published worked examples wherever one exists.</p>
+</header>
+
+<div class="grid">
+  <div class="card">
+    <div class="num" style="color:#22d3ee">01</div>
+    <div class="info"><h2>The Transmission Line and the Physical Channel</h2><p>When a trace stops being a wire, where the fifty-ohm convention comes from, and what a reflection actually is.</p></div>
+    <div class="action"><a class="btn btn-launch" href="01-transmission-lines/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#34d399">02</div>
+    <div class="info"><h2>Return Paths and Reference Planes</h2><p>Every signal current is a loop. Where the other half of it flows, and what happens when the board will not let it.</p></div>
+    <div class="action"><a class="btn btn-launch" href="02-return-paths/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#fbbf24">03</div>
+    <div class="info"><h2>Materials, Loss and Causality</h2><p>Copper roughness, dielectric loss, and why a constant dielectric constant describes a material that cannot exist.</p></div>
+    <div class="action"><a class="btn btn-launch" href="03-materials-and-loss/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#f59e0b">04</div>
+    <div class="info"><h2>Vias, Connectors and Discontinuities</h2><p>The only part of a channel made by drilling, and the one that decides whether the link runs at 28 gigabaud.</p></div>
+    <div class="action"><a class="btn btn-launch" href="04-vias-and-discontinuities/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#a78bfa">05</div>
+    <div class="info"><h2>Differential Signalling</h2><p>Why every fast link is differential, what tight coupling really costs, and how symmetry is lost.</p></div>
+    <div class="action"><a class="btn btn-launch" href="05-differential-signalling/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#f472b6">06</div>
+    <div class="info"><h2>Crosstalk</h2><p>The impairment no equaliser can remove, and the one place near-end and far-end coupling genuinely differ.</p></div>
+    <div class="action"><a class="btn btn-launch" href="06-crosstalk/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#60a5fa">07</div>
+    <div class="info"><h2>Power Integrity as a Signal-Integrity Problem</h2><p>How a disturbance on the supply becomes an error at the receiver, and why more capacitors can make it worse.</p></div>
+    <div class="action"><a class="btn btn-launch" href="07-power-integrity/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#c084fc">08</div>
+    <div class="info"><h2>Jitter</h2><p>Bounded and unbounded, measured and extrapolated, and the bathtub curve that flatters a link it should not.</p></div>
+    <div class="action"><a class="btn btn-launch" href="08-jitter/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#2dd4bf">09</div>
+    <div class="info"><h2>Timing, Flight Time and the Budget</h2><p>Flight time is not propagation delay, and the arithmetic that ended the wide parallel bus.</p></div>
+    <div class="action"><a class="btn btn-launch" href="09-timing-and-budgets/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#fb923c">10</div>
+    <div class="info"><h2>Measurement, De-embedding and Correlation</h2><p>Where S-parameters come from, how they are damaged, and what correlation honestly means.</p></div>
+    <div class="action"><a class="btn btn-launch" href="10-measurement-and-correlation/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#4ade80">11</div>
+    <div class="info"><h2>Channel Operating Margin and Compliance</h2><p>How a standard decides a channel is legal, run on the same channel the equalisation deck could not close.</p></div>
+    <div class="action"><a class="btn btn-launch" href="11-com-and-compliance/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+</div>
+
+<h2 class="section-title">What has been checked against published work</h2>
+<div class="panel">
+<p>A model that agrees only with itself is not worth much. Every cross-check the series
+makes against an independently published result is listed here, with the disagreement.
+The worst is 2.44&nbsp;per&nbsp;cent.</p>
+<table>
+<thead><tr><th>Quantity</th><th>This series</th><th>Published</th><th>Difference</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>zdiff w0.15 s0.15</td><td>102.62</td><td>102.44</td><td class="ok">+0.18&nbsp;%</td><td>Cohn 1955, exact coupled-stripline result</td></tr>
+<tr><td>zdiff w0.15 s0.30</td><td>112.32</td><td>112.39</td><td class="ok">-0.06&nbsp;%</td><td>Cohn 1955, exact coupled-stripline result</td></tr>
+<tr><td>zdiff w0.20 s0.20</td><td>93.189</td><td>93.282</td><td class="ok">-0.10&nbsp;%</td><td>Cohn 1955, exact coupled-stripline result</td></tr>
+<tr><td>f rough onset</td><td>1.348e+09</td><td>1.34e+09</td><td class="ok">+0.59&nbsp;%</td><td>Hall & Heck, Advanced Signal Integrity, ch. 5</td></tr>
+<tr><td>hammerstad rac ratio</td><td>1.7144</td><td>1.7284</td><td class="ok">-0.81&nbsp;%</td><td>Hall & Heck, Advanced Signal Integrity, ch. 5</td></tr>
+<tr><td>huray factor</td><td>1.9579</td><td>1.95</td><td class="ok">+0.40&nbsp;%</td><td>Hall & Heck, Advanced Signal Integrity, ch. 5</td></tr>
+<tr><td>huray sphere area um2</td><td>160.9</td><td>161</td><td class="ok">-0.06&nbsp;%</td><td>Hall & Heck, Advanced Signal Integrity, ch. 5</td></tr>
+<tr><td>weave five inch ghz</td><td>19.511</td><td>20</td><td class="ok">-2.44&nbsp;%</td><td>Hall & Heck, example 7-2</td></tr>
+<tr><td>weave ten inch ghz</td><td>9.7557</td><td>10</td><td class="ok">-2.44&nbsp;%</td><td>Hall & Heck, example 7-2</td></tr>
+<tr><td>return within 3h</td><td>0.79517</td><td>0.8</td><td class="ok">-0.60&nbsp;%</td><td>Johnson sec 5.2; Hall & Heck eq (5-15)</td></tr>
+<tr><td>C</td><td>6.917e-11</td><td>6.91e-11</td><td class="ok">+0.10&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>L</td><td>6.917e-07</td><td>6.91e-07</td><td class="ok">+0.10&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>critical length m</td><td>1.977</td><td>1.97</td><td class="ok">+0.35&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>f diel</td><td>4.9889e+08</td><td>4.98e+08</td><td class="ok">+0.18&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>f lc</td><td>9.5873e+06</td><td>9.58e+06</td><td class="ok">+0.08&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>f skin</td><td>2.7152e+07</td><td>2.71e+07</td><td class="ok">+0.19&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>f wg</td><td>1.423e+11</td><td>1.42e+11</td><td class="ok">+0.21&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>r ac f0</td><td>76.742</td><td>76.74</td><td class="ok">+0.00&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>r dc</td><td>12.645</td><td>12.64</td><td class="ok">+0.04&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>v0</td><td>1.4457e+08</td><td>1.4457e+08</td><td class="ok">+0.00&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+</tbody></table></div>
+
+<h2 class="section-title">How to read the series</h2>
+<div class="panel">
+<ul>
+<li><strong>Decks 01&ndash;04</strong> build the passive channel: what a transmission line
+is, where the return current flows, what the materials do to the signal, and what happens
+at the one feature that is made by drilling.</li>
+<li><strong>Decks 05&ndash;06</strong> are about the signal on it &mdash; why it is
+differential, and the one impairment no equaliser can remove.</li>
+<li><strong>Decks 07&ndash;09</strong> are about the environment: the supply, the clock,
+and the timing budget the whole thing has to fit into.</li>
+<li><strong>Decks 10&ndash;11</strong> ask whether any of it can be believed, and how a
+standard turns it into a verdict.</li>
+</ul>
+<p style="margin-top:0.8rem">Most decks are worked against one channel &mdash; the
+28.8&nbsp;inch backplane characterised in
+<a href="https://brendanjameslynskey.github.io/SerDes_Equalisation/">Equalisation in
+High-Speed Serial Links</a> &mdash; so the numbers in one deck can be set against the
+numbers in another.</p>
+</div>
+
+<h2 class="section-title">Related material</h2>
+<div class="panel">
+<table>
+<thead><tr><th>Repository</th><th>How it relates</th></tr></thead>
+<tbody>
+<tr><td><a href="https://brendanjameslynskey.github.io/SerDes_Equalisation/">Equalisation in High-Speed Serial Links</a></td><td>The worked channel this series keeps returning to, taken from S-parameters to a closed link budget</td></tr>
+<tr><td><a href="https://brendanjameslynskey.github.io/Matrix_Methods_Network_Parameters/">Matrix Methods in Network Parameters</a></td><td>The S-, Z- and Y-parameter algebra behind every cascade here</td></tr>
+<tr><td><a href="https://brendanjameslynskey.github.io/Matrix_Concepts_Digital_Filters/">Matrix Concepts in Digital Filters</a></td><td>The optimal-tap theory behind every equaliser</td></tr>
+<tr><td><a href="https://brendanjameslynskey.github.io/Kramers_Kronig_Relations/">Kramers&ndash;Kronig Relations</a></td><td>The causality constraint decks 03 and 10 both lean on</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/Interview_High_Speed_Serial_Links">High-Speed Serial Links &mdash; interview preparation</a></td><td>The written companion: notes and worked problems on the same ground</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/Interview_LPDDRx_Layout">LPDDRx Layout &mdash; interview preparation</a></td><td>The parallel-bus side of deck 09</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/SoC">Modern SoC Design</a></td><td>The silicon side: deck 04 on SerDes, 09 on power delivery, 13 on clocks</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/Hardware">Hardware</a></td><td>The index this series sits in</td></tr>
+</tbody>
+</table>
+</div>
+
+<footer>
+  <p>130 slides across eleven decks &middot; single-page HTML &middot;
+  KaTeX-rendered maths &middot; no build step</p>
+  <p style="margin-top:.5rem"><a href="https://github.com/BrendanJamesLynskey/Signal_Integrity">Source
+  on GitHub</a> &middot; models in
+  <a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">Matrix_Articles</a></p>
+</footer>
+
+</div>
+</body>
+</html>
