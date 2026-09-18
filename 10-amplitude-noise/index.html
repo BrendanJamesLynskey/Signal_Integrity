@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosstalk, Amplitude Noise and the Two-Dimensional View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+    <style>
+        :root { --bg-primary:#0a0a0a; --bg-card:#0d1117; --bg-code:#161b22; --text-primary:#e6edf3; --text-secondary:#8b949e; --accent:#d946ef; --accent-dim:#d946ef44; --accent-glow:#d946ef33; --accent-2:#f472b6; --accent-3:#fbbf24; --accent-4:#34d399; --border:#21262d; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:17px;line-height:1.7;overflow-x:hidden}
+        .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem 1.5rem;text-align:center;position:relative}
+        .hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none;z-index:0}
+        .hero>*{position:relative;z-index:1}
+        .series-label{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem}
+        .hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:var(--text-primary);line-height:1.2;margin-bottom:1rem}
+        .hero h1 .accent{color:var(--accent)}
+        .hero .subtitle{font-size:1.1rem;color:var(--text-secondary);max-width:640px;margin-bottom:2rem}
+        .tags{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2.5rem}
+        .tag{font-family:var(--font-mono);font-size:.75rem;padding:.25rem .75rem;border-radius:999px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-dim);white-space:nowrap}
+        .pipeline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.25rem;margin-bottom:1rem;max-width:var(--max-width)}
+        .pipeline-step{font-family:var(--font-mono);font-size:.7rem;padding:.3rem .7rem;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-secondary);white-space:nowrap}
+        .pipeline-arrow{color:var(--accent);font-size:.9rem;font-weight:700}
+        .slide{min-height:100vh;max-width:var(--max-width);margin:0 auto;padding:4rem 1.5rem;position:relative;display:flex;flex-direction:column;justify-content:center}
+        .slide-number{font-family:var(--font-display);font-size:5rem;font-weight:700;color:var(--accent-dim);position:absolute;top:2rem;right:1.5rem;line-height:1;user-select:none}
+        .slide h2{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:var(--accent);margin-bottom:1.5rem;line-height:1.25}
+        .slide h3{font-family:var(--font-display);font-size:1.3rem;font-weight:600;color:var(--text-primary);margin-top:1.5rem;margin-bottom:.75rem}
+        .slide p{margin-bottom:1rem;color:var(--text-secondary)}
+        .slide p strong{color:var(--text-primary)}
+        .slide ul,.slide ol{margin-bottom:1rem;padding-left:1.5rem;color:var(--text-secondary)}
+        .slide li{margin-bottom:.4rem}
+        .slide li strong{color:var(--text-primary)}
+        .slide code{background:var(--bg-code);padding:.1rem .35rem;border-radius:3px;font-family:var(--font-mono);font-size:.85em;color:var(--accent)}
+        .diagram-grid{display:grid;gap:.75rem;margin:1.5rem 0;padding:1.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px}
+        .diagram-grid.cols-2{grid-template-columns:1fr 1fr}
+        .diagram-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+        .diagram-panel{padding:1rem;background:var(--bg-code);border:1px solid var(--border);border-radius:6px}
+        .diagram-panel.accent-border{border-left:3px solid var(--accent)}
+        .diagram-panel.r{border-left:3px solid var(--accent-2)}
+        .diagram-panel.y{border-left:3px solid var(--accent-3)}
+        .diagram-panel.g{border-left:3px solid var(--accent-4)}
+        .diagram-panel h4{font-family:var(--font-display);font-size:1rem;color:var(--accent);margin-bottom:.5rem}
+        .diagram-panel.r h4{color:var(--accent-2)}
+        .diagram-panel.y h4{color:var(--accent-3)}
+        .diagram-panel.g h4{color:var(--accent-4)}
+        .diagram-panel p,.diagram-panel ul{font-size:.9rem}
+        .callout{background:var(--bg-card);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.25rem 0}
+        .callout p{margin-bottom:0}
+        .callout .callout-label{font-family:var(--font-mono);font-size:.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+        .canvas-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1.25rem 0;overflow-x:auto}
+        .canvas-wrap canvas{display:block;margin:0 auto;max-width:100%;image-rendering:pixelated}
+        .control-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin:1.25rem 0}
+        .control-row{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin-bottom:.75rem}
+        .control-row label{font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);min-width:130px}
+        .control-row input[type="range"]{flex:1;min-width:150px;accent-color:var(--accent)}
+        .control-row .val{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:80px;text-align:right}
+        .btn{font-family:var(--font-mono);font-size:.8rem;padding:.4rem .9rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);border-radius:4px;cursor:pointer}
+        .btn:hover{background:rgba(217,70,239,.25)}
+        .btn.secondary{background:var(--bg-code);color:var(--text-secondary);border-color:var(--border)}
+        .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-top:.75rem}
+        .metric{background:var(--bg-code);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;text-align:center}
+        .metric .metric-label{font-family:var(--font-mono);font-size:.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em}
+        .metric .metric-value{font-family:var(--font-display);font-size:1.25rem;color:var(--accent);font-weight:600;margin-top:.2rem}
+        .contents-list{list-style:none;padding-left:0;counter-reset:contents}
+        .contents-list li{counter-increment:contents;padding:.6rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+        .contents-list li:last-child{border-bottom:none}
+        .contents-list li::before{content:counter(contents,decimal-leading-zero);font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:2rem}
+        .contents-list a{color:var(--text-primary);text-decoration:none}
+        .contents-list a:hover{color:var(--accent)}
+        .footer{text-align:center;padding:3rem 1.5rem;color:var(--text-secondary);font-size:.85rem;border-top:1px solid var(--border);max-width:var(--max-width);margin:0 auto}
+        .footer a{color:var(--accent);text-decoration:none}
+        .katex{color:var(--text-primary)}
+        .katex-display{margin:1rem 0;overflow-x:auto;overflow-y:hidden}
+        table{width:100%;border-collapse:collapse;font-size:.9rem;margin:1rem 0}
+        th{background:var(--bg-code);color:var(--accent);font-weight:600;text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--border);font-family:var(--font-display)}
+        td{padding:.5rem .85rem;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+        tr:last-child td{border-bottom:none}
+        tr:nth-child(even) td{background:rgba(13,17,23,.5)}
+        @media (max-width:640px){.slide{padding:3rem 1rem;min-height:auto}.slide-number{font-size:3rem;top:1.5rem;right:1rem}.slide h2{font-size:1.5rem}.diagram-grid.cols-2,.diagram-grid.cols-3{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
+
+        .legend{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:.6rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-secondary)}
+        .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:middle}
+        .verdict{font-family:var(--font-mono);font-size:.8rem;padding:.35rem .7rem;border-radius:4px;display:inline-block;margin-top:.5rem}
+        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(52,211,153,.12)}
+        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(244,114,182,.12)}
+        .canvas-wrap canvas{image-rendering:auto}
+        .metric-label .katex,.callout-label .katex,.series-label .katex,
+        .metric-label .katex *,.callout-label .katex *{text-transform:none}
+        .note{font-size:.85rem;color:var(--text-secondary);font-style:italic;margin-top:.5rem}
+        .seriesnav{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:1.2rem 0}
+        .seriesnav a{font-family:var(--font-mono);font-size:.7rem;padding:.25rem .6rem;border-radius:4px;border:1px solid var(--border);color:var(--text-secondary);text-decoration:none}
+        .seriesnav a:hover{border-color:var(--accent);color:var(--accent)}
+        .seriesnav a.here{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+        .checktab td:last-child,.checktab th:last-child{text-align:right}
+        .ok{color:var(--accent-4)} .bad{color:var(--accent-2)}
+        /* keep the page itself from ever scrolling sideways: wide tables and
+           wide display maths each scroll inside their own box instead */
+        .slide table{display:block;overflow-x:auto;max-width:100%}
+        .katex-mathml{position:absolute!important;clip:rect(1px,1px,1px,1px);
+            width:1px!important;height:1px!important;overflow:hidden}
+        .katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden}
+        .slide select{max-width:100%}
+    </style>
+
+</head>
+<body>
+<script>const SI = {"ui_ps":35.714285714285715,"separability":{"rows":[{"rate_gbps":1,"ui_ps":1000.0000000000001,"samples_per_ui":896,"rise_time_ps":127.71727468445704,"rise_time_ui":0.127717274684457,"cursor_mv":337.9994596356874,"slew_mv_per_ps":1.587879762408466,"jitter_rms_ps":3.7786236351418157,"jitter_rms_ui":0.003778623635141815,"jitter_pp_ui_at_1e12":0.05316133357964697,"relative_to_slowest":1.0},{"rate_gbps":2.5,"ui_ps":400.0,"samples_per_ui":358,"rise_time_ps":107.19353311885374,"rise_time_ui":0.26798383279713434,"cursor_mv":297.91036852637313,"slew_mv_per_ps":1.6675093722084349,"jitter_rms_ps":3.59818067592247,"jitter_rms_ui":0.008995451689806176,"jitter_pp_ui_at_1e12":0.12655671857179748,"relative_to_slowest":2.380615948661044},{"rate_gbps":5,"ui_ps":200.0,"samples_per_ui":179,"rise_time_ps":90.49762476337874,"rise_time_ui":0.4524881238168937,"cursor_mv":249.17045364177253,"slew_mv_per_ps":1.6520021666420786,"jitter_rms_ps":3.6319564956720516,"jitter_rms_ui":0.018159782478360257,"jitter_pp_ui_at_1e12":0.2554893917159615,"relative_to_slowest":4.805925181188019},{"rate_gbps":10,"ui_ps":100.0,"samples_per_ui":90,"rise_time_ps":74.63336672377962,"rise_time_ui":0.7463336672377962,"cursor_mv":180.19974731605802,"slew_mv_per_ps":1.4486797679888903,"jitter_rms_ps":4.141702074247518,"jitter_rms_ui":0.04141702074247518,"jitter_pp_ui_at_1e12":0.5826947238377832,"relative_to_slowest":10.960874842704667},{"rate_gbps":14,"ui_ps":71.42857142857143,"samples_per_ui":64,"rise_time_ps":68.71123065741968,"rise_time_ui":0.9619572292038755,"cursor_mv":143.2736202609557,"slew_mv_per_ps":1.2510934724073484,"jitter_rms_ps":4.795804735880227,"jitter_rms_ui":0.06714126630232319,"jitter_pp_ui_at_1e12":0.944608301727238,"relative_to_slowest":17.768709663989416},{"rate_gbps":28,"ui_ps":35.714285714285715,"samples_per_ui":32,"rise_time_ps":62.47955539463338,"rise_time_ui":1.7494275510497346,"cursor_mv":80.51079708767918,"slew_mv_per_ps":0.7731565621345114,"jitter_rms_ps":7.760394587398119,"jitter_rms_ui":0.21729104844714733,"jitter_pp_ui_at_1e12":3.0570607252173425,"relative_to_slowest":57.505343063623805},{"rate_gbps":56,"ui_ps":17.857142857142858,"samples_per_ui":16,"rise_time_ps":60.44096377009822,"rise_time_ui":3.3846939711255004,"cursor_mv":42.16613915938588,"slew_mv_per_ps":0.4185850442733669,"jitter_rms_ps":14.334004719197655,"jitter_rms_ui":0.8027042642750686,"jitter_pp_ui_at_1e12":11.293220304363672,"relative_to_slowest":212.43297607355976}],"noise_mv_rms":6.0,"amp_mv":400.0},"slew":{"slew_mv_per_ps":5.957835263179726,"crossing_index":4220,"rise_time_ps":53.710783508507824},"amp_to_jitter":[{"dv_mv":1,"jitter_ps":0.16784619846408694,"jitter_ui":0.0046996935569944345},{"dv_mv":2,"jitter_ps":0.3356923969281739,"jitter_ui":0.009399387113988869},{"dv_mv":5,"jitter_ps":0.8392309923204347,"jitter_ui":0.023498467784972173},{"dv_mv":10,"jitter_ps":1.6784619846408695,"jitter_ui":0.046996935569944345},{"dv_mv":20,"jitter_ps":3.356923969281739,"jitter_ui":0.09399387113988869}],"xt_jitter":{"xt_mv_rms":2.061865610759227,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":0.346076304509769,"jitter_pp_ps":2.422534131568383,"jitter_rms_ui":0.009690136526273532,"jitter_pp_ui":0.06783095568391473,"n_sigma":7.0},"xt_sweep":[{"xt_mv_rms":1,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":0.16784619846408694,"jitter_pp_ps":1.1749233892486086,"jitter_rms_ui":0.0046996935569944345,"jitter_pp_ui":0.03289785489896104,"n_sigma":7.0},{"xt_mv_rms":2,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":0.3356923969281739,"jitter_pp_ps":2.3498467784972172,"jitter_rms_ui":0.009399387113988869,"jitter_pp_ui":0.06579570979792208,"n_sigma":7.0},{"xt_mv_rms":5,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":0.8392309923204347,"jitter_pp_ps":5.8746169462430435,"jitter_rms_ui":0.023498467784972173,"jitter_pp_ui":0.16448927449480522,"n_sigma":7.0},{"xt_mv_rms":10,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":1.6784619846408695,"jitter_pp_ps":11.749233892486087,"jitter_rms_ui":0.046996935569944345,"jitter_pp_ui":0.32897854898961043,"n_sigma":7.0},{"xt_mv_rms":20,"slew_mv_per_ps":5.957835263179726,"jitter_rms_ps":3.356923969281739,"jitter_pp_ps":23.498467784972174,"jitter_rms_ui":0.09399387113988869,"jitter_pp_ui":0.6579570979792209,"n_sigma":7.0}],"_verify":{"tline/f_lc":{"ours":9587278.979748158,"published":9580000.0,"err_pct":0.07598099945884673,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_skin":{"ours":27151901.210939728,"published":27100000.0,"err_pct":0.19151738354143966,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_diel":{"ours":498890118.8426195,"published":498000000.0,"err_pct":0.1787387234175597,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_wg":{"ours":142296024617.44565,"published":142000000000.0,"err_pct":0.20846804045469014,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/v0":{"ours":144572761.01132476,"published":144570000.0,"err_pct":0.0019098093136715732,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/L":{"ours":6.916932297652304e-07,"published":6.91e-07,"err_pct":0.10032268671931188,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/C":{"ours":6.916932297652303e-11,"published":6.91e-11,"err_pct":0.10032268671928968,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/r_dc":{"ours":12.645499112791782,"published":12.64,"err_pct":0.04350563917547845,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/r_ac_f0":{"ours":76.74248412292344,"published":76.74,"err_pct":0.003237064012839852,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/critical_length_m":{"ours":1.9769880000000002,"published":1.97,"err_pct":0.35472081218275164,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"retpath/return_within_3h":{"ours":0.7951672353008666,"published":0.8,"err_pct":-0.6040955873916731,"source":"Johnson sec 5.2; Hall & Heck eq (5-15)","within_tolerance":true},"materials/f_rough_onset":{"ours":1347929752.5853794,"published":1340000000.0,"err_pct":0.5917725809984509,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/hammerstad_rac_ratio":{"ours":1.714374158507506,"published":1.728395061728395,"err_pct":-0.8112094006371473,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/huray_factor":{"ours":1.9578885888531392,"published":1.95,"err_pct":0.4045430181097043,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/huray_sphere_area_um2":{"ours":160.89879019907772,"published":161.0,"err_pct":-0.06286323038651176,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/weave_ten_inch_ghz":{"ours":9.755697875577873,"published":10.0,"err_pct":-2.443021244221266,"source":"Hall & Heck, example 7-2","within_tolerance":true},"materials/weave_five_inch_ghz":{"ours":19.511395751155746,"published":20.0,"err_pct":-2.443021244221266,"source":"Hall & Heck, example 7-2","within_tolerance":true},"diffpair/zdiff_w0.15_s0.15":{"ours":102.6215037202481,"published":102.43618163243639,"err_pct":0.1809146776640791,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"diffpair/zdiff_w0.15_s0.30":{"ours":112.31957182908276,"published":112.38835865486917,"err_pct":-0.061204582582830014,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"diffpair/zdiff_w0.20_s0.20":{"ours":93.1887582512857,"published":93.28172965542484,"err_pct":-0.09966732444023352,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"pdn/droop_vs_zpeak":{"ours":23.24067382159534,"published":24.875697022099697,"err_pct":-6.572773414356159,"source":"internal: deepest transient droop per amp against the peak of the impedance profile (time domain vs frequency domain)","within_tolerance":true}}};</script>
+<header class="hero">
+    <div class="series-label">Signal Integrity &mdash; Jitter, Deck 10 of 17</div>
+    <h1>Crosstalk, Amplitude Noise <span class="accent">and the Two-Dimensional View</span></h1>
+    <p class="subtitle">The fourth rule, and the one the previous three quietly depend on
+    being false only a little: timing noise and amplitude noise are not separable. On the
+    channel this series works against, the separation stops being safe at about ten
+    gigabits per second.</p>
+
+    <div class="tags">
+        <span class="tag">rule four</span><span class="tag">slew rate</span>
+        <span class="tag">BUJ</span><span class="tag">crosstalk</span>
+        <span class="tag">RJ(h) / RJ(v)</span><span class="tag">2-D noise</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">voltage noise</span>
+        <span class="pipeline-arrow">&divide;</span>
+        <span class="pipeline-step">$dV/dt$</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">jitter</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">the same budget</span>
+    </div>
+    <div class="seriesnav"><a href="../01-transmission-lines/">01 Transmission lines</a><a href="../02-return-paths/">02 Return paths</a><a href="../03-materials-and-loss/">03 Materials and loss</a><a href="../04-vias-and-discontinuities/">04 Vias</a><a href="../05-differential-signalling/">05 Differential pairs</a><a href="../06-crosstalk/">06 Crosstalk</a><a href="../07-total-jitter/">07 Total jitter</a><a href="../08-dual-dirac/">08 Dual-Dirac</a><a href="../09-clock-recovery/">09 Clock recovery</a><a href="#" class="here">10 Amplitude noise</a><a href="../11-pdn-impedance/">11 PDN impedance</a><a href="../12-planes-and-ecology/">12 Planes and ecology</a><a href="../13-measuring-low-impedance/">13 Measuring milliohms</a><a href="../14-pi-meets-si/">14 PI meets SI</a><a href="../15-timing-and-budgets/">15 Timing budgets</a><a href="../16-measurement-and-correlation/">16 Measurement</a><a href="../17-com-and-compliance/">17 COM and compliance</a></div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <ul class="contents-list">
+        <li><a href="#slide-01">Rule four: noise is noise</a></li>
+        <li><a href="#slide-02">How amplitude noise becomes jitter</a></li>
+        <li><a href="#slide-03">Interactive: the conversion on the real channel</a></li>
+        <li><a href="#slide-04">Interactive: where the separation stops being safe</a></li>
+        <li><a href="#slide-05">Crosstalk is the canonical bounded uncorrelated jitter</a></li>
+        <li><a href="#slide-06">Crosstalk in both dimensions at once</a></li>
+        <li><a href="#slide-07">The two-dimensional picture</a></li>
+        <li><a href="#slide-08">Receiver tolerance testing, with crosstalk</a></li>
+        <li><a href="#slide-09">Cheat sheet</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>Rule Four: Noise Is Noise</h2>
+    <p>Everything in the three previous decks treats jitter as a one-dimensional problem:
+    transitions move horizontally, and the question is by how much. Look at an eye
+    diagram and the assumption is obviously incomplete. The noise on it is visible in
+    both directions, and the two are not independent.</p>
+
+    <p>The voltage noise that reduces the signal-to-noise ratio does not only cause
+    amplitude errors. It also moves the instant at which the waveform crosses its
+    threshold, which is jitter by any definition. Equally, phase noise does not only
+    cause timing errors &mdash; at a fixed sampling instant on a sloping edge it produces
+    an amplitude error.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The idealisation</h4>
+            <p>With infinitely fast edges, jitter would be caused by phase noise alone
+            and amplitude noise would cause no timing error whatever. Separating the two
+            would then be exact rather than convenient.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>The reality</h4>
+            <p>Real transitions have finite slope. A vertical displacement therefore
+            produces a horizontal one, in a ratio set entirely by that slope &mdash; and
+            the slope, on a lossy channel, is set by the channel rather than by the
+            transmitter.</p>
+        </div>
+    </div>
+
+    <p>Stephens's formulation is that jitter analysis considers one dimension of a
+    two-dimensional problem, and that this is useful rather than correct. The purpose of
+    this deck is to find where it stops being useful, which turns out to be a computable
+    question with an uncomfortable answer.</p>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>How Amplitude Noise Becomes Jitter</h2>
+    <p>The conversion is geometric and immediate. A waveform displaced vertically by
+    $\delta V$ crosses its threshold earlier or later by that displacement divided by the
+    slope it crosses at:</p>
+
+    <p>$$\delta t \approx \frac{\delta V}{dV/dt}.$$</p>
+
+    <p>Three things follow, and none of them is obvious from the one-dimensional
+    picture.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel y">
+            <h4>Slow edges convert more</h4>
+            <p>The slower the transition, the more timing error a given voltage
+            disturbance produces. An equaliser that restores amplitude without restoring
+            the edge does not help with this term.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>The channel sets the slope</h4>
+            <p>Not the transmitter. Past the channel's bandwidth the received edge stops
+            getting faster however hard the driver is pushed, so the conversion factor is
+            a property of the board.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Every voltage term reappears</h4>
+            <p>Receiver noise, crosstalk, supply ripple, reflections: each has a jitter
+            equivalent, and adding them in the voltage budget and again in the timing
+            budget double-counts, while adding them in only one under-counts.</p>
+        </div>
+    </div>
+
+    <p>The vocabulary extends in the obvious way. Random jitter has a counterpart in
+    random noise, deterministic jitter in deterministic noise, data-dependent jitter in
+    data-dependent noise; and each can be split further into the part contributed by
+    phase noise and the part contributed by amplitude noise &mdash; written
+    RJ(h) and RJ(v) for the horizontal and vertical contributions.</p>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>Interactive: The Conversion on the Real Channel</h2>
+    <p>The slope is measured from the equalised pulse response of the same 28.8-inch
+    backplane the rest of this series uses, so the conversion factor below is that
+    channel's, not a generic one.</p>
+
+    <div class="control-panel">
+        <div class="metric-grid" id="sl-metrics"></div>
+    </div>
+
+    <div class="canvas-wrap">
+        <canvas id="av-plot" width="780" height="280"></canvas>
+        <div class="legend">
+            <span><i style="background:#d946ef"></i>jitter produced by a voltage disturbance</span>
+            <span><i style="background:#fbbf24"></i>the crosstalk computed in deck 06</span>
+        </div>
+    </div>
+
+    <p class="note" id="av-note"></p>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Interactive: Where the Separation Stops Being Safe</h2>
+    <p>Here is the result that makes this deck worth computing. Hold the transmitter's
+    amplitude and the receiver's voltage noise fixed, and let the symbol rate rise on the
+    same physical channel.</p>
+
+    <p>It is tempting to assume the edge scales with the rate, in which case the
+    amplitude-induced jitter would stay a constant fraction of the unit interval and
+    nothing interesting would happen. That assumption is wrong, and it is wrong in the
+    direction that matters: the <em>channel</em> sets the received rise time, and the
+    channel's bandwidth does not improve because the data rate went up.</p>
+
+    <div class="canvas-wrap">
+        <canvas id="sp-plot" width="780" height="310"></canvas>
+        <div class="legend">
+            <span><i style="background:#d946ef"></i>amplitude-induced jitter, in UI</span>
+            <span><i style="background:#22d3ee"></i>received rise time, in UI</span>
+            <span><i style="background:#fbbf24"></i>about ten gigabits per second</span>
+        </div>
+    </div>
+
+    <div class="canvas-wrap" style="overflow-x:auto">
+        <table id="sp-table"></table>
+    </div>
+
+    <p class="note" id="sp-note"></p>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>Crosstalk Is the Canonical Bounded Uncorrelated Jitter</h2>
+    <p>Deck 07 introduced bounded uncorrelated jitter as the category the industry uses
+    for organising its ignorance. Crosstalk is its best example, and it earns the place
+    by failing every other classification.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Not random</h4>
+            <p>It is an exact, deterministic function of the aggressor's data. Nothing
+            about it is stochastic; there is no underlying Gaussian process.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Not data-dependent either</h4>
+            <p>It is a function of somebody <em>else's</em> data, which the victim's
+            receiver has never seen and cannot predict. So the equaliser, which removes
+            data-dependent jitter by construction, does nothing about it.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Bounded</h4>
+            <p>By the aggressor's swing, so it cannot grow without limit the way a
+            Gaussian can. That is what puts it on the deterministic side of the tree
+            despite being unpredictable.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>And it looks Gaussian</h4>
+            <p>Several uncorrelated aggressors with random data sum towards a bell shape,
+            which is exactly the condition deck 08 showed inflates the fitted random
+            jitter. Crosstalk is therefore routinely counted as random and multiplied by
+            fourteen on its way into the total.</p>
+        </div>
+    </div>
+
+    <p class="note">This is why the decomposition tree has a branch that is defined by
+    what it is not. The category is an admission that the measurement cannot separate
+    these contributions, and the remedy is experimental rather than analytical: measure
+    with the aggressors quiet, then with them driven.</p>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>Crosstalk in Both Dimensions at Once</h2>
+    <p>Deck 06 computed the crosstalk on this channel as a voltage: four near-end
+    aggressors at three trace widths on an inner layer, combining in power. Rule four says
+    that voltage has a timing equivalent, and the slew rate of slide 03 converts it.</p>
+
+    <div class="metric-grid" id="xt-metrics"></div>
+
+    <p id="xt-note"></p>
+
+    <div class="callout">
+        <div class="callout-label">The double-counting trap</div>
+        <p>The same physical disturbance now appears in two budgets. It must be counted
+        once, not twice &mdash; and which budget it belongs in depends on where the
+        receiver's margin is tightest. A receiver limited by its voltage threshold should
+        carry it as voltage; one limited by its sampling window should carry it as
+        timing. Carrying it in both is the commonest way a budget comes out pessimistic
+        by a factor that nobody can locate afterwards.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>The Two-Dimensional Picture</h2>
+    <p>The resolution, when the one-dimensional treatment stops being trustworthy, is to
+    stop projecting. Instead of an eye opening measured horizontally at a fixed voltage
+    or vertically at a fixed time, the honest object is a two-dimensional region of the
+    time-voltage plane within which the error ratio is acceptable.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>What it buys</h4>
+            <p>It stops the double-counting of the previous slide, because each
+            disturbance is placed once in the plane rather than projected onto both axes.
+            And it makes visible the fact that the worst case is usually a diagonal
+            &mdash; a bit that is both late and low &mdash; rather than either extreme.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>What it costs</h4>
+            <p>Two dimensions of measurement instead of one, so the observation time for
+            a given confidence goes up sharply; and a specification language that most
+            standards do not have. This is why the industry still specifies jitter and
+            amplitude separately even where everyone agrees it is an approximation.</p>
+        </div>
+    </div>
+
+    <p>The channel operating margin of deck 17 is a partial answer: it combines the noise
+    terms into a single signal-to-noise ratio at the sampling instant, which is a
+    projection onto the voltage axis after the timing terms have been converted into
+    voltage through the slope. That is the same conversion as slide 02, run in the
+    opposite direction, and it is why that calculation carries a jitter term at all.</p>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>Receiver Tolerance Testing, With Crosstalk</h2>
+    <p>Compliance testing of a receiver applies a deliberately degraded signal and checks
+    that the error ratio is still met. The stress is specified as a list: so much
+    sinusoidal jitter, so much random jitter, so much bounded uncorrelated jitter, a
+    defined amount of intersymbol interference, and an amplitude.</p>
+
+    <p>Adding crosstalk to that list is comparatively recent and it changes the test in a
+    way the list format hides. The other impairments are one-dimensional by construction
+    &mdash; sinusoidal jitter is purely timing, an amplitude reduction is purely voltage.
+    Crosstalk is neither, and calibrating it means calibrating a two-dimensional
+    disturbance with instruments that report projections.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel y">
+            <h4>Calibration is the hard part</h4>
+            <p>The stress has to be verified at the receiver's pins, through the test
+            fixture, with the aggressors driven. Every impairment interacts with the
+            fixture, and the fixture has to be de-embedded &mdash; which is deck 16.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Why it is worth doing</h4>
+            <p>A receiver that passes with one-dimensional stress and fails with
+            crosstalk is a common outcome, because its adaptation loops can converge on a
+            setting that is optimal for the clean case and poor for the noisy one.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>And why it is contentious</h4>
+            <p>The amount of crosstalk to apply is a judgement about the systems the part
+            will be used in, not a measurement. Deck 17 shows the crosstalk assumption
+            moving a compliance verdict further than any receiver parameter does.</p>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>Cheat Sheet</h2>
+    <table>
+        <thead><tr><th>Idea</th><th>Statement</th><th>Consequence</th></tr></thead>
+        <tbody>
+            <tr><td>Rule 4</td><td>Timing and amplitude noise are not separable</td><td>Useful, not correct; find where it fails</td></tr>
+            <tr><td>Conversion</td><td>$\delta t \approx \delta V / (dV/dt)$</td><td>Every voltage term has a timing equivalent</td></tr>
+            <tr><td>Who sets the slope</td><td>The channel, not the transmitter</td><td>Past the channel bandwidth the edge stops improving</td></tr>
+            <tr><td>Where it fails</td><td>Around 10 Gb/s on this channel</td><td>Rise time overtakes the unit interval; see slide 04</td></tr>
+            <tr><td>Crosstalk</td><td>Bounded, uncorrelated, looks Gaussian</td><td>Counted as random jitter and multiplied by 14</td></tr>
+            <tr><td>Double counting</td><td>One disturbance, two budgets</td><td>Count it once, in whichever budget is tighter</td></tr>
+            <tr><td>The honest object</td><td>A region of the time-voltage plane</td><td>The worst case is a diagonal, not an axis</td></tr>
+            <tr><td>Tolerance testing</td><td>Crosstalk is two-dimensional stress</td><td>Calibration, not generation, is the hard part</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<script>
+const C={bg:'#0d1117',grid:'#21262d',dim:'#8b949e',accent:'#d946ef',teal:'#34d399',
+         cyan:'#22d3ee',pink:'#f472b6',amber:'#fbbf24',text:'#e6edf3'};
+function hidpi(id){const c=document.getElementById(id);if(!c)return null;
+  const r=window.devicePixelRatio||1,w=c.width,h=c.height;
+  c.style.width=w+'px';c.style.height=h+'px';c.width=Math.round(w*r);c.height=Math.round(h*r);
+  const x=c.getContext('2d');x.scale(r,r);return{ctx:x,w,h};}
+function clear(ctx,w,h){ctx.fillStyle=C.bg;ctx.fillRect(0,0,w,h);}
+function label(ctx,t,x,y,c2,s,a){ctx.fillStyle=c2||C.dim;
+  ctx.font=(s||10)+"px 'JetBrains Mono', monospace";ctx.textAlign=a||'left';
+  ctx.fillText(t,x,y);ctx.textAlign='left';}
+function dashed(ctx,on){ctx.setLineDash(on?[4,4]:[]);}
+function metric(l,v){return '<div class="metric"><div class="metric-label">'+l+
+  '</div><div class="metric-value">'+v+'</div></div>';}
+function axes(ctx,w,h,p,xl,yl){ctx.strokeStyle=C.grid;ctx.lineWidth=1;ctx.beginPath();
+  ctx.moveTo(p.l,p.t);ctx.lineTo(p.l,h-p.b);ctx.lineTo(w-p.r,h-p.b);ctx.stroke();
+  if(xl)label(ctx,xl,(p.l+w-p.r)/2,h-6,C.dim,10,'center');
+  if(yl)label(ctx,yl,p.l,p.t-10,C.dim,10,'left');}
+
+/* ---- 03 amplitude to jitter ---- */
+(function(){
+  const H=hidpi('av-plot'); if(!H||!SI.amp_to_jitter)return;
+  const d=SI.amp_to_jitter, sl=SI.slew, ui=SI.ui_ps||35.71;
+  document.getElementById('sl-metrics').innerHTML=
+    metric('slew at the crossing',sl.slew_mv_per_ps.toFixed(3)+' mV/ps')+
+    metric('equivalent rise time',sl.rise_time_ps.toFixed(1)+' ps')+
+    metric('unit interval',ui.toFixed(2)+' ps')+
+    metric('1 mV becomes',(1/sl.slew_mv_per_ps).toFixed(3)+' ps');
+  const {ctx,w,h}=H; clear(ctx,w,h);
+  const p={l:58,r:16,t:20,b:42};
+  const xm=d[d.length-1].dv_mv*1.05;
+  const X=v=>p.l+v/xm*(w-p.l-p.r);
+  const ym=d[d.length-1].jitter_ps*1.15;
+  const Y=v=>h-p.b-v/ym*(h-p.t-p.b);
+  axes(ctx,w,h,p,'voltage disturbance, mV','jitter produced, ps');
+  for(let i=0;i<=4;i++){const v=ym*i/4;ctx.strokeStyle=C.grid;ctx.beginPath();
+    ctx.moveTo(p.l,Y(v));ctx.lineTo(w-p.r,Y(v));ctx.stroke();
+    label(ctx,v.toFixed(2),p.l-6,Y(v)+3,C.dim,9,'right');}
+  for(let g=0;g<=xm;g+=5){ctx.strokeStyle=C.grid;ctx.beginPath();
+    ctx.moveTo(X(g),p.t);ctx.lineTo(X(g),h-p.b);ctx.stroke();
+    label(ctx,g+'',X(g),h-p.b+14,C.dim,9,'center');}
+  ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.beginPath();
+  d.forEach(function(r,i){const px=X(r.dv_mv),py=Y(r.jitter_ps);
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+  ctx.stroke();
+  d.forEach(function(r){ctx.fillStyle=C.accent;ctx.beginPath();
+    ctx.arc(X(r.dv_mv),Y(r.jitter_ps),3.5,0,6.3);ctx.fill();});
+  if(SI.xt_jitter){const x=SI.xt_jitter;
+    ctx.strokeStyle=C.amber;dashed(ctx,true);ctx.beginPath();
+    ctx.moveTo(X(x.xt_mv_rms),p.t);ctx.lineTo(X(x.xt_mv_rms),h-p.b);ctx.stroke();
+    dashed(ctx,false);
+    label(ctx,'crosstalk, '+x.xt_mv_rms.toFixed(2)+' mV rms',X(x.xt_mv_rms)+5,
+          p.t+14,C.amber,10,'left');}
+  document.getElementById('av-note').textContent=
+    'On this channel the equalised edge crosses at '+sl.slew_mv_per_ps.toFixed(2)+
+    ' millivolts per picosecond, so every millivolt of voltage disturbance is worth '+
+    (1/sl.slew_mv_per_ps).toFixed(3)+' picoseconds of timing error — '+
+    (100/sl.slew_mv_per_ps/ui).toFixed(2)+' per cent of a unit interval. That factor is '+
+    'a property of the board and the equaliser together, and it is the exchange rate '+
+    'between the two budgets.';
+})();
+
+/* ---- 04 separability ---- */
+(function(){
+  const H=hidpi('sp-plot'); if(!H||!SI.separability)return;
+  const rows=SI.separability.rows; const {ctx,w,h}=H; clear(ctx,w,h);
+  const p={l:60,r:56,t:22,b:44};
+  const X=i=>p.l+(i+0.5)/rows.length*(w-p.l-p.r);
+  let ym=0; rows.forEach(function(r){ym=Math.max(ym,r.jitter_rms_ui);}); ym*=1.15;
+  const Y=v=>h-p.b-v/ym*(h-p.t-p.b);
+  let rm=0; rows.forEach(function(r){rm=Math.max(rm,r.rise_time_ui||0);}); rm*=1.15;
+  const Y2=v=>h-p.b-v/rm*(h-p.t-p.b);
+  axes(ctx,w,h,p,'symbol rate, Gb/s','amplitude-induced jitter, UI rms');
+  for(let i=0;i<=4;i++){const v=ym*i/4;ctx.strokeStyle=C.grid;ctx.beginPath();
+    ctx.moveTo(p.l,Y(v));ctx.lineTo(w-p.r,Y(v));ctx.stroke();
+    label(ctx,v.toFixed(2),p.l-6,Y(v)+3,C.accent,9,'right');}
+  for(let i=0;i<=4;i++)label(ctx,(rm*i/4).toFixed(1),w-p.r+6,Y2(rm*i/4)+3,C.cyan,9,'left');
+  let i10=0; rows.forEach(function(r,i){if(Math.abs(r.rate_gbps-10)<Math.abs(rows[i10].rate_gbps-10))i10=i;});
+  ctx.strokeStyle=C.amber;dashed(ctx,true);ctx.beginPath();
+  ctx.moveTo(X(i10),p.t);ctx.lineTo(X(i10),h-p.b);ctx.stroke();dashed(ctx,false);
+  ctx.strokeStyle=C.cyan;ctx.lineWidth=1.6;ctx.beginPath();
+  rows.forEach(function(r,i){const px=X(i),py=Y2(r.rise_time_ui||0);
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+  ctx.stroke();
+  ctx.strokeStyle=C.accent;ctx.lineWidth=2.2;ctx.beginPath();
+  rows.forEach(function(r,i){const px=X(i),py=Y(r.jitter_rms_ui);
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+  ctx.stroke();
+  rows.forEach(function(r,i){ctx.fillStyle=C.accent;ctx.beginPath();
+    ctx.arc(X(i),Y(r.jitter_rms_ui),3.5,0,6.3);ctx.fill();
+    label(ctx,r.rate_gbps+'',X(i),h-p.b+16,C.dim,9,'center');});
+  const t=document.getElementById('sp-table');
+  let html='<thead><tr><th>Rate</th><th>Unit interval</th><th>Received rise time</th>'+
+    '<th>Rise time / UI</th><th>Cursor</th><th>Slew</th>'+
+    '<th>Amplitude-induced jitter</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    html+='<tr><td>'+r.rate_gbps+' Gb/s</td><td>'+r.ui_ps.toFixed(1)+' ps</td><td>'+
+      (r.rise_time_ps||0).toFixed(0)+' ps</td><td class="'+
+      ((r.rise_time_ui||0)>1?'bad':'ok')+'">'+(r.rise_time_ui||0).toFixed(2)+
+      '</td><td>'+r.cursor_mv.toFixed(0)+' mV</td><td>'+
+      r.slew_mv_per_ps.toFixed(2)+' mV/ps</td><td>'+
+      r.jitter_rms_ui.toFixed(4)+' UI</td></tr>';});
+  html+='</tbody>'; t.innerHTML=html;
+  const a=rows[0], z=rows[rows.length-1];
+  let best=rows[0]; rows.forEach(function(r){if(r.jitter_rms_ui<best.jitter_rms_ui)best=r;});
+  document.getElementById('sp-note').textContent=
+    'The received rise time barely changes across the whole sweep — from '+
+    (a.rise_time_ps||0).toFixed(0)+' to '+(z.rise_time_ps||0).toFixed(0)+
+    ' picoseconds — because it is the channel, not the transmitter, that sets it. '+
+    'The unit interval, meanwhile, falls by a factor of '+(a.ui_ps/z.ui_ps).toFixed(0)+
+    ', so the edge grows from '+(a.rise_time_ui||0).toFixed(2)+' of a unit interval to '+
+    (z.rise_time_ui||0).toFixed(1)+', the cursor falls from '+a.cursor_mv.toFixed(0)+
+    ' to '+z.cursor_mv.toFixed(0)+' mV, and the slew rate peaks and then declines. '+
+    'The jitter that '+SI.separability.noise_mv_rms+
+    ' mV of receiver noise produces therefore rises from '+
+    a.jitter_rms_ui.toFixed(4)+' to '+z.jitter_rms_ui.toFixed(3)+
+    ' unit intervals — a factor of '+(z.jitter_rms_ui/best.jitter_rms_ui).toFixed(0)+
+    ' from its best point, which falls at about '+best.rate_gbps+
+    ' Gb/s. Stephens put the breakdown of the one-dimensional treatment at around ten '+
+    'gigabits per second from quite different reasoning; this channel agrees.';
+})();
+
+/* ---- 06 crosstalk as jitter ---- */
+(function(){
+  const el=document.getElementById('xt-metrics'); if(!el||!SI.xt_jitter)return;
+  const x=SI.xt_jitter, ui=SI.ui_ps||35.71;
+  el.innerHTML=metric('crosstalk, from deck 06',x.xt_mv_rms.toFixed(2)+' mV rms')+
+    metric('as jitter',x.jitter_rms_ps.toFixed(3)+' ps rms')+
+    metric('in unit intervals',x.jitter_rms_ui.toFixed(4)+' UI')+
+    metric('peak to peak at 1e-12',x.jitter_pp_ui.toFixed(4)+' UI');
+  document.getElementById('xt-note').textContent=
+    'The '+x.xt_mv_rms.toFixed(2)+' millivolts of integrated crosstalk noise computed '+
+    'in deck 06 is also '+x.jitter_rms_ps.toFixed(3)+' picoseconds of jitter, or '+
+    (100*x.jitter_rms_ui).toFixed(2)+' per cent of a unit interval rms. It is the same '+
+    'disturbance described twice. Treated as a Gaussian at an error ratio of '+
+    '10⁻¹² it would close '+(100*x.jitter_pp_ui).toFixed(1)+
+    ' per cent of the eye — and because it is bounded rather than Gaussian, that '+
+    'treatment is pessimistic, which is precisely the ambiguity the category exists to '+
+    'record.';
+})();
+</script>
+
+<div class="footer">
+    <p>Deck 10 of eleven in <a href="../">Signal Integrity &amp; High-Speed
+    Digital Design</a>. Every figure on this page is computed by
+    <a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">si_models/deck10</a>
+    and embedded as data; nothing is typed in by hand.</p>
+    <div class="seriesnav"><a href="../01-transmission-lines/">01 Transmission lines</a><a href="../02-return-paths/">02 Return paths</a><a href="../03-materials-and-loss/">03 Materials and loss</a><a href="../04-vias-and-discontinuities/">04 Vias</a><a href="../05-differential-signalling/">05 Differential pairs</a><a href="../06-crosstalk/">06 Crosstalk</a><a href="../07-total-jitter/">07 Total jitter</a><a href="../08-dual-dirac/">08 Dual-Dirac</a><a href="../09-clock-recovery/">09 Clock recovery</a><a href="#" class="here">10 Amplitude noise</a><a href="../11-pdn-impedance/">11 PDN impedance</a><a href="../12-planes-and-ecology/">12 Planes and ecology</a><a href="../13-measuring-low-impedance/">13 Measuring milliohms</a><a href="../14-pi-meets-si/">14 PI meets SI</a><a href="../15-timing-and-budgets/">15 Timing budgets</a><a href="../16-measurement-and-correlation/">16 Measurement</a><a href="../17-com-and-compliance/">17 COM and compliance</a></div>
+    <p style="margin-top:.6rem">Single-page HTML &middot; KaTeX-rendered maths &middot; no build step.
+    <a href="https://github.com/BrendanJamesLynskey/Signal_Integrity">Source on GitHub</a></p>
+</div>
+
+</body>
+</html>

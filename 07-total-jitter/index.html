@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Jitter and the Bit Error Ratio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+    <style>
+        :root { --bg-primary:#0a0a0a; --bg-card:#0d1117; --bg-code:#161b22; --text-primary:#e6edf3; --text-secondary:#8b949e; --accent:#c084fc; --accent-dim:#c084fc44; --accent-glow:#c084fc33; --accent-2:#f472b6; --accent-3:#fbbf24; --accent-4:#34d399; --border:#21262d; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:17px;line-height:1.7;overflow-x:hidden}
+        .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem 1.5rem;text-align:center;position:relative}
+        .hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none;z-index:0}
+        .hero>*{position:relative;z-index:1}
+        .series-label{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem}
+        .hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:var(--text-primary);line-height:1.2;margin-bottom:1rem}
+        .hero h1 .accent{color:var(--accent)}
+        .hero .subtitle{font-size:1.1rem;color:var(--text-secondary);max-width:640px;margin-bottom:2rem}
+        .tags{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2.5rem}
+        .tag{font-family:var(--font-mono);font-size:.75rem;padding:.25rem .75rem;border-radius:999px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-dim);white-space:nowrap}
+        .pipeline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.25rem;margin-bottom:1rem;max-width:var(--max-width)}
+        .pipeline-step{font-family:var(--font-mono);font-size:.7rem;padding:.3rem .7rem;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;color:var(--text-secondary);white-space:nowrap}
+        .pipeline-arrow{color:var(--accent);font-size:.9rem;font-weight:700}
+        .slide{min-height:100vh;max-width:var(--max-width);margin:0 auto;padding:4rem 1.5rem;position:relative;display:flex;flex-direction:column;justify-content:center}
+        .slide-number{font-family:var(--font-display);font-size:5rem;font-weight:700;color:var(--accent-dim);position:absolute;top:2rem;right:1.5rem;line-height:1;user-select:none}
+        .slide h2{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:var(--accent);margin-bottom:1.5rem;line-height:1.25}
+        .slide h3{font-family:var(--font-display);font-size:1.3rem;font-weight:600;color:var(--text-primary);margin-top:1.5rem;margin-bottom:.75rem}
+        .slide p{margin-bottom:1rem;color:var(--text-secondary)}
+        .slide p strong{color:var(--text-primary)}
+        .slide ul,.slide ol{margin-bottom:1rem;padding-left:1.5rem;color:var(--text-secondary)}
+        .slide li{margin-bottom:.4rem}
+        .slide li strong{color:var(--text-primary)}
+        .slide code{background:var(--bg-code);padding:.1rem .35rem;border-radius:3px;font-family:var(--font-mono);font-size:.85em;color:var(--accent)}
+        .diagram-grid{display:grid;gap:.75rem;margin:1.5rem 0;padding:1.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px}
+        .diagram-grid.cols-2{grid-template-columns:1fr 1fr}
+        .diagram-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+        .diagram-panel{padding:1rem;background:var(--bg-code);border:1px solid var(--border);border-radius:6px}
+        .diagram-panel.accent-border{border-left:3px solid var(--accent)}
+        .diagram-panel.r{border-left:3px solid var(--accent-2)}
+        .diagram-panel.y{border-left:3px solid var(--accent-3)}
+        .diagram-panel.g{border-left:3px solid var(--accent-4)}
+        .diagram-panel h4{font-family:var(--font-display);font-size:1rem;color:var(--accent);margin-bottom:.5rem}
+        .diagram-panel.r h4{color:var(--accent-2)}
+        .diagram-panel.y h4{color:var(--accent-3)}
+        .diagram-panel.g h4{color:var(--accent-4)}
+        .diagram-panel p,.diagram-panel ul{font-size:.9rem}
+        .callout{background:var(--bg-card);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.25rem 0}
+        .callout p{margin-bottom:0}
+        .callout .callout-label{font-family:var(--font-mono);font-size:.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+        .canvas-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1.25rem 0;overflow-x:auto}
+        .canvas-wrap canvas{display:block;margin:0 auto;max-width:100%;image-rendering:pixelated}
+        .control-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1.25rem;margin:1.25rem 0}
+        .control-row{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin-bottom:.75rem}
+        .control-row label{font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);min-width:130px}
+        .control-row input[type="range"]{flex:1;min-width:150px;accent-color:var(--accent)}
+        .control-row .val{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:80px;text-align:right}
+        .btn{font-family:var(--font-mono);font-size:.8rem;padding:.4rem .9rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);border-radius:4px;cursor:pointer}
+        .btn:hover{background:rgba(192,132,252,.25)}
+        .btn.secondary{background:var(--bg-code);color:var(--text-secondary);border-color:var(--border)}
+        .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-top:.75rem}
+        .metric{background:var(--bg-code);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;text-align:center}
+        .metric .metric-label{font-family:var(--font-mono);font-size:.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.08em}
+        .metric .metric-value{font-family:var(--font-display);font-size:1.25rem;color:var(--accent);font-weight:600;margin-top:.2rem}
+        .contents-list{list-style:none;padding-left:0;counter-reset:contents}
+        .contents-list li{counter-increment:contents;padding:.6rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+        .contents-list li:last-child{border-bottom:none}
+        .contents-list li::before{content:counter(contents,decimal-leading-zero);font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:2rem}
+        .contents-list a{color:var(--text-primary);text-decoration:none}
+        .contents-list a:hover{color:var(--accent)}
+        .footer{text-align:center;padding:3rem 1.5rem;color:var(--text-secondary);font-size:.85rem;border-top:1px solid var(--border);max-width:var(--max-width);margin:0 auto}
+        .footer a{color:var(--accent);text-decoration:none}
+        .katex{color:var(--text-primary)}
+        .katex-display{margin:1rem 0;overflow-x:auto;overflow-y:hidden}
+        table{width:100%;border-collapse:collapse;font-size:.9rem;margin:1rem 0}
+        th{background:var(--bg-code);color:var(--accent);font-weight:600;text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--border);font-family:var(--font-display)}
+        td{padding:.5rem .85rem;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+        tr:last-child td{border-bottom:none}
+        tr:nth-child(even) td{background:rgba(13,17,23,.5)}
+        @media (max-width:640px){.slide{padding:3rem 1rem;min-height:auto}.slide-number{font-size:3rem;top:1.5rem;right:1rem}.slide h2{font-size:1.5rem}.diagram-grid.cols-2,.diagram-grid.cols-3{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
+
+        .legend{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:.6rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-secondary)}
+        .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:middle}
+        .verdict{font-family:var(--font-mono);font-size:.8rem;padding:.35rem .7rem;border-radius:4px;display:inline-block;margin-top:.5rem}
+        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(52,211,153,.12)}
+        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(244,114,182,.12)}
+        .canvas-wrap canvas{image-rendering:auto}
+        .metric-label .katex,.callout-label .katex,.series-label .katex,
+        .metric-label .katex *,.callout-label .katex *{text-transform:none}
+        .note{font-size:.85rem;color:var(--text-secondary);font-style:italic;margin-top:.5rem}
+        .seriesnav{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:1.2rem 0}
+        .seriesnav a{font-family:var(--font-mono);font-size:.7rem;padding:.25rem .6rem;border-radius:4px;border:1px solid var(--border);color:var(--text-secondary);text-decoration:none}
+        .seriesnav a:hover{border-color:var(--accent);color:var(--accent)}
+        .seriesnav a.here{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+        .checktab td:last-child,.checktab th:last-child{text-align:right}
+        .ok{color:var(--accent-4)} .bad{color:var(--accent-2)}
+        /* keep the page itself from ever scrolling sideways: wide tables and
+           wide display maths each scroll inside their own box instead */
+        .slide table{display:block;overflow-x:auto;max-width:100%}
+        .katex-mathml{position:absolute!important;clip:rect(1px,1px,1px,1px);
+            width:1px!important;height:1px!important;overflow:hidden}
+        .katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden}
+        .slide select{max-width:100%}
+    </style>
+
+</head>
+<body>
+<script>const SI = {"q":{"0.001":3.0902323193319505,"1e-06":4.7534243117419805,"1e-09":5.997807000529628,"1e-12":7.034483811147252,"1e-15":7.9413453173698905,"1e-17":8.493793219044093},"rules":["It's about the bit error ratio","Total jitter can only be measured on a bit error ratio tester","Measurements of jitter are always the comparison of a test clock and a reference clock","Timing noise and amplitude noise are not really separable (but we do it anyway)","It's still about the bit error ratio"],"bert":[{"ber":1e-06,"rate_gbps":2.5,"bits":10000000.0,"seconds":0.004,"minutes":6.666666666666667e-05,"hours":1.111111111111111e-06,"days":4.6296296296296295e-08,"one_error_every_s":0.0004},{"ber":1e-06,"rate_gbps":28.0,"bits":10000000.0,"seconds":0.00035714285714285714,"minutes":5.9523809523809525e-06,"hours":9.920634920634921e-08,"days":4.133597883597884e-09,"one_error_every_s":3.571428571428572e-05},{"ber":1e-09,"rate_gbps":2.5,"bits":10000000000.0,"seconds":4.0,"minutes":0.06666666666666667,"hours":0.0011111111111111111,"days":4.6296296296296294e-05,"one_error_every_s":0.4},{"ber":1e-09,"rate_gbps":28.0,"bits":10000000000.0,"seconds":0.35714285714285715,"minutes":0.005952380952380953,"hours":9.92063492063492e-05,"days":4.133597883597884e-06,"one_error_every_s":0.03571428571428571},{"ber":1e-12,"rate_gbps":2.5,"bits":10000000000000.0,"seconds":4000.0,"minutes":66.66666666666667,"hours":1.1111111111111112,"days":0.046296296296296294,"one_error_every_s":400.0},{"ber":1e-12,"rate_gbps":28.0,"bits":10000000000000.0,"seconds":357.14285714285717,"minutes":5.9523809523809526,"hours":0.09920634920634921,"days":0.004133597883597884,"one_error_every_s":35.714285714285715},{"ber":1e-15,"rate_gbps":2.5,"bits":1e+16,"seconds":4000000.0,"minutes":66666.66666666667,"hours":1111.111111111111,"days":46.2962962962963,"one_error_every_s":399999.99999999994},{"ber":1e-15,"rate_gbps":28.0,"bits":1e+16,"seconds":357142.85714285716,"minutes":5952.380952380952,"hours":99.20634920634922,"days":4.133597883597884,"one_error_every_s":35714.28571428572}],"bert_28":[{"ber":1e-06,"rate_gbps":28.0,"bits":10000000.0,"seconds":0.00035714285714285714,"minutes":5.9523809523809525e-06,"hours":9.920634920634921e-08,"days":4.133597883597884e-09,"one_error_every_s":3.571428571428572e-05},{"ber":1e-09,"rate_gbps":28.0,"bits":10000000000.0,"seconds":0.35714285714285715,"minutes":0.005952380952380953,"hours":9.92063492063492e-05,"days":4.133597883597884e-06,"one_error_every_s":0.03571428571428571},{"ber":1e-12,"rate_gbps":28.0,"bits":10000000000000.0,"seconds":357.14285714285717,"minutes":5.9523809523809526,"hours":0.09920634920634921,"days":0.004133597883597884,"one_error_every_s":35.714285714285715},{"ber":1e-15,"rate_gbps":28.0,"bits":1e+16,"seconds":357142.85714285716,"minutes":5952.380952380952,"hours":99.20634920634922,"days":4.133597883597884,"one_error_every_s":35714.28571428572},{"ber":1e-17,"rate_gbps":28.0,"bits":9.999999999999999e+17,"seconds":35714285.71428571,"minutes":595238.0952380951,"hours":9920.634920634919,"days":413.3597883597883,"one_error_every_s":3571428.5714285714}],"ddj":{"n":28,"pp_ui":1.9303144451895378,"std_ui":0.7052862393438537,"pp_ps":68.93980161391207,"std_ps":25.18879426228049,"hist":[1,0,2,0,0,0,3,1,1,1,2,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,1,1,1,3,2],"bins":[-0.9352920041528421,-0.89507711987806,-0.854862235603278,-0.814647351328496,-0.7744324670537139,-0.7342175827789319,-0.6940026985041499,-0.6537878142293678,-0.6135729299545858,-0.5733580456798038,-0.5331431614050217,-0.4929282771302397,-0.45271339285545764,-0.4124985085806756,-0.37228362430589357,-0.33206874003111153,-0.2918538557563295,-0.25163897148154746,-0.21142408720676542,-0.17120920293198338,-0.13099431865720135,-0.09077943438241931,-0.050564550107637274,-0.010349665832855237,0.0298652184419268,0.07008010271670884,0.11029498699149087,0.1505098712662729,0.19072475554105495,0.23093963981583698,0.271154524090619,0.31136940836540106,0.3515842926401831,0.39179917691496513,0.43201406118974717,0.4722289454645292,0.5124438297393112,0.5526587140140933,0.5928735982888753,0.6330884825636574,0.6733033668384394,0.7135182511132214,0.7537331353880035,0.7939480196627855,0.8341629039375675,0.8743777882123496,0.9145926724871316,0.9548075567619136,0.9950224410366957]},"ui_ps":35.714285714285715,"taxonomy":[{"acronym":"RJ","name":"random jitter","bounded":false,"correlated":"no","source":"thermal and flicker noise in oscillators and samplers","combines":"in quadrature","fixed_by":"a better oscillator"},{"acronym":"DDJ","name":"data-dependent jitter","bounded":true,"correlated":"with the victim data","source":"the channel's own intersymbol interference","combines":"deterministically","fixed_by":"equalisation"},{"acronym":"DCD","name":"duty-cycle distortion","bounded":true,"correlated":"with the data","source":"a threshold away from mid-swing","combines":"deterministically","fixed_by":"the transmitter"},{"acronym":"PJ","name":"periodic jitter","bounded":true,"correlated":"no","source":"a tone from elsewhere, often a regulator","combines":"deterministically","fixed_by":"the supply, or the plan"},{"acronym":"SJ","name":"sinusoidal jitter","bounded":true,"correlated":"no","source":"deliberately applied for calibration","combines":"deterministically","fixed_by":"not a defect"},{"acronym":"BUJ","name":"bounded uncorrelated jitter","bounded":true,"correlated":"no","source":"crosstalk, chiefly","combines":"deterministically but unpredictably","fixed_by":"geometry"}],"_verify":{"tline/f_lc":{"ours":9587278.979748158,"published":9580000.0,"err_pct":0.07598099945884673,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_skin":{"ours":27151901.210939728,"published":27100000.0,"err_pct":0.19151738354143966,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_diel":{"ours":498890118.8426195,"published":498000000.0,"err_pct":0.1787387234175597,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/f_wg":{"ours":142296024617.44565,"published":142000000000.0,"err_pct":0.20846804045469014,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/v0":{"ours":144572761.01132476,"published":144570000.0,"err_pct":0.0019098093136715732,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/L":{"ours":6.916932297652304e-07,"published":6.91e-07,"err_pct":0.10032268671931188,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/C":{"ours":6.916932297652303e-11,"published":6.91e-11,"err_pct":0.10032268671928968,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/r_dc":{"ours":12.645499112791782,"published":12.64,"err_pct":0.04350563917547845,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/r_ac_f0":{"ours":76.74248412292344,"published":76.74,"err_pct":0.003237064012839852,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"tline/critical_length_m":{"ours":1.9769880000000002,"published":1.97,"err_pct":0.35472081218275164,"source":"Johnson & Graham, Advanced Black Magic 2003, sec 3.10","within_tolerance":true},"retpath/return_within_3h":{"ours":0.7951672353008666,"published":0.8,"err_pct":-0.6040955873916731,"source":"Johnson sec 5.2; Hall & Heck eq (5-15)","within_tolerance":true},"materials/f_rough_onset":{"ours":1347929752.5853794,"published":1340000000.0,"err_pct":0.5917725809984509,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/hammerstad_rac_ratio":{"ours":1.714374158507506,"published":1.728395061728395,"err_pct":-0.8112094006371473,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/huray_factor":{"ours":1.9578885888531392,"published":1.95,"err_pct":0.4045430181097043,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/huray_sphere_area_um2":{"ours":160.89879019907772,"published":161.0,"err_pct":-0.06286323038651176,"source":"Hall & Heck, Advanced Signal Integrity, ch. 5","within_tolerance":true},"materials/weave_ten_inch_ghz":{"ours":9.755697875577873,"published":10.0,"err_pct":-2.443021244221266,"source":"Hall & Heck, example 7-2","within_tolerance":true},"materials/weave_five_inch_ghz":{"ours":19.511395751155746,"published":20.0,"err_pct":-2.443021244221266,"source":"Hall & Heck, example 7-2","within_tolerance":true},"diffpair/zdiff_w0.15_s0.15":{"ours":102.6215037202481,"published":102.43618163243639,"err_pct":0.1809146776640791,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"diffpair/zdiff_w0.15_s0.30":{"ours":112.31957182908276,"published":112.38835865486917,"err_pct":-0.061204582582830014,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"diffpair/zdiff_w0.20_s0.20":{"ours":93.1887582512857,"published":93.28172965542484,"err_pct":-0.09966732444023352,"source":"Cohn 1955, exact coupled-stripline result","within_tolerance":true},"pdn/droop_vs_zpeak":{"ours":23.24067382159534,"published":24.875697022099697,"err_pct":-6.572773414356159,"source":"internal: deepest transient droop per amp against the peak of the impedance profile (time domain vs frequency domain)","within_tolerance":true}}};</script>
+<header class="hero">
+    <div class="series-label">Signal Integrity &mdash; Jitter, Deck 07 of 17</div>
+    <h1>Total Jitter and the <span class="accent">Bit Error Ratio</span></h1>
+    <p class="subtitle">Jitter is not a quantity a system has; it is a quantity defined
+    against an error ratio you nominate. Everything awkward about measuring it follows
+    from that, and so does the one instrument that can do it honestly.</p>
+
+    <div class="tags">
+        <span class="tag">TJ(BER)</span><span class="tag">BERT</span>
+        <span class="tag">RJ / DJ</span><span class="tag">DDJ</span>
+        <span class="tag">BUJ</span><span class="tag">stationarity</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">timing noise</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">eye closure</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">$\mathrm{BER}(t)$</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">TJ(BER)</span>
+    </div>
+    <div class="seriesnav"><a href="../01-transmission-lines/">01 Transmission lines</a><a href="../02-return-paths/">02 Return paths</a><a href="../03-materials-and-loss/">03 Materials and loss</a><a href="../04-vias-and-discontinuities/">04 Vias</a><a href="../05-differential-signalling/">05 Differential pairs</a><a href="../06-crosstalk/">06 Crosstalk</a><a href="#" class="here">07 Total jitter</a><a href="../08-dual-dirac/">08 Dual-Dirac</a><a href="../09-clock-recovery/">09 Clock recovery</a><a href="../10-amplitude-noise/">10 Amplitude noise</a><a href="../11-pdn-impedance/">11 PDN impedance</a><a href="../12-planes-and-ecology/">12 Planes and ecology</a><a href="../13-measuring-low-impedance/">13 Measuring milliohms</a><a href="../14-pi-meets-si/">14 PI meets SI</a><a href="../15-timing-and-budgets/">15 Timing budgets</a><a href="../16-measurement-and-correlation/">16 Measurement</a><a href="../17-com-and-compliance/">17 COM and compliance</a></div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <ul class="contents-list">
+        <li><a href="#slide-01">Five rules, and why they are worth having</a></li>
+        <li><a href="#slide-02">Total jitter is a function, not a number</a></li>
+        <li><a href="#slide-03">Interactive: what only a bit error ratio tester can do</a></li>
+        <li><a href="#slide-04">Two quantities called Q</a></li>
+        <li><a href="#slide-05">The decomposition tree, done properly</a></li>
+        <li><a href="#slide-06">Bounded uncorrelated jitter: organising ignorance</a></li>
+        <li><a href="#slide-07">Interactive: the real distribution, from the channel</a></li>
+        <li><a href="#slide-08">Stationarity, the assumption nobody states</a></li>
+        <li><a href="#slide-09">Two frequency domains, easily confused</a></li>
+        <li><a href="#slide-10">Cheat sheet</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>Five Rules, and Why They Are Worth Having</h2>
+    <p>Jitter attracts acronyms faster than almost any other topic in this field, and it
+    is easy to end up fluent in the vocabulary while losing track of what any of it is
+    for. Ransom Stephens's remedy is a short list of rules that the acronyms have to
+    serve, and this section of the series is organised around them.</p>
+
+    <div class="diagram-grid cols-2" id="rules-grid"></div>
+
+    <p>The first and the last are the same rule, which is the point of stating it twice.
+    We care about jitter for exactly the reason we care about signal-to-noise ratio: a
+    poor one means a high error rate. Voltage noise causes errors when the signal
+    fluctuates vertically across the sampling point; jitter causes errors when the
+    transition fluctuates horizontally across it. Anything said about jitter that cannot
+    be connected back to an error ratio is decoration.</p>
+
+    <div class="callout">
+        <div class="callout-label">Where the four rules are treated</div>
+        <p>The first and fifth are this deck. The second is slide 03 and everything
+        about the dual-Dirac model in deck 08, which exists because the honest
+        measurement is too slow. The third is deck 09, on clock recovery and the
+        reference clock. The fourth &mdash; that timing noise and amplitude noise are not
+        really separable &mdash; is deck 10, and it is the one this series would most
+        easily have got wrong, because the separation is so convenient that it is rarely
+        questioned.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>Total Jitter Is a Function, Not a Number</h2>
+    <p>The quantity that links jitter to errors is <strong>total jitter at a specified
+    error ratio</strong>, written TJ(BER). It is the amount by which the eye has closed
+    horizontally by the time the error ratio reaches the value you nominate, and it
+    changes with that value &mdash; which is why quoting a total jitter without the error
+    ratio it belongs to says very little.</p>
+
+    <p>The construction is straightforward. Sweep the sampling instant across the unit
+    interval and record the error ratio at each position. Near the middle it is
+    vanishingly small; approaching either crossing it climbs. The horizontal distance
+    between the two flanks at a chosen level is the eye opening at that level, and the
+    total jitter is the unit interval minus that opening:</p>
+
+    <p>$$\mathrm{TJ(BER)} = T_b - \text{eye opening at that BER}.$$</p>
+
+    <p>Read backwards, this is a design criterion: a link works at a given error ratio
+    if the total jitter at that error ratio is less than one bit period. Read forwards,
+    it says something less comfortable &mdash; the eye may be wide open at
+    $10^{-6}$ and entirely closed at $10^{-15}$, and the two statements describe the same
+    signal.</p>
+
+    <div class="metric-grid" id="q-metrics"></div>
+
+    <p class="note">The multiplier on the random part of the jitter grows only slowly
+    with the error ratio, which is both a mercy and a trap: three extra decades of
+    reliability cost less than one unit of Q, so the budget is insensitive far from the
+    target and very sensitive near it.</p>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>Interactive: What Only a Bit Error Ratio Tester Can Do</h2>
+    <p>The second rule is the awkward one. Total jitter at a low error ratio can only be
+    <em>measured</em> on a bit error ratio tester, because measuring an error ratio means
+    counting errors, and counting enough of them to believe the number means transmitting
+    on the order of ten divided by that ratio.</p>
+
+    <p>Everything else &mdash; every oscilloscope, every time-interval analyser, every
+    fast estimate a bit error ratio tester itself offers &mdash; produces an
+    <em>estimate</em>, obtained by measuring what can be measured quickly and
+    extrapolating with a model. Deck 08 is about that model and what it costs.</p>
+
+    <div class="control-panel">
+        <div class="control-row">
+            <label for="bt-rate">symbol rate</label>
+            <input type="range" id="bt-rate" min="0" max="4" step="1" value="3">
+            <span class="val" id="bt-rate-val"></span>
+        </div>
+        <div class="metric-grid" id="bt-metrics"></div>
+        <div id="bt-verdict" class="verdict ok"></div>
+    </div>
+
+    <div class="canvas-wrap">
+        <canvas id="bt-plot" width="780" height="290"></canvas>
+        <div class="legend">
+            <span><i style="background:#c084fc"></i>time to a confident measurement</span>
+            <span><i style="background:#fbbf24"></i>one working day</span>
+        </div>
+    </div>
+
+    <p class="note" id="bt-note"></p>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Two Quantities Called Q</h2>
+    <p>Before any arithmetic, a collision of notation worth flagging explicitly, because
+    it genuinely catches engineers who work across both domains &mdash; and the two meet
+    inside this very topic.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Communications Q</h4>
+            <p>The argument of the complementary error function: a signal-to-noise ratio
+            measured in standard deviations, so that the error ratio is
+            $\tfrac{1}{2}\,\mathrm{erfc}(Q/\sqrt{2})$. Dimensionless, normally between
+            three and eight, and larger is better. Every budget in this series uses it.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Resonator Q</h4>
+            <p>Energy stored divided by energy dissipated per radian: a property of a
+            tuned circuit, normally between ten and several thousand. Larger is also
+            better, and it means something entirely different.</p>
+        </div>
+    </div>
+
+    <p>They meet in a chain that makes the confusion harder rather than easier to avoid.
+    The resonator Q of an inductor-capacitor oscillator's tank sets its phase noise; the
+    phase noise integrates to the random jitter; the random jitter is part of the noise
+    in the denominator of the communications Q. A sentence about a high-Q tank improving
+    Q is therefore not nonsense &mdash; but it needs both words defined, and a reviewer
+    who works across both will ask.</p>
+
+    <div class="canvas-wrap" style="overflow-x:auto">
+        <table id="q-table"></table>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>The Decomposition Tree, Done Properly</h2>
+    <p>The reason to decompose jitter at all is that the components combine differently
+    and are fixed by different purchases. Bounded quantities add arithmetically,
+    unbounded ones in quadrature, and a budget that mixes the rules passes on the bench
+    and fails in the field.</p>
+
+    <p>The standard tree splits total jitter into random and deterministic; splits
+    deterministic into data-dependent, periodic and bounded uncorrelated; and puts
+    intersymbol interference and duty-cycle distortion under data-dependent, with a
+    dotted line between them because duty-cycle distortion changes how much intersymbol
+    interference there is.</p>
+
+    <div class="canvas-wrap" style="overflow-x:auto">
+        <table id="tax-table"></table>
+    </div>
+
+    <p class="note">The last column is the one that earns the decomposition its keep. A
+    budget reporting a single total jitter figure cannot tell you whether to buy a better
+    oscillator, a longer equaliser, a quieter regulator or more spacing &mdash; and those
+    are four different conversations with four different departments.</p>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>Bounded Uncorrelated Jitter: Organising Ignorance</h2>
+    <p>One branch of the tree deserves its own slide because it is honest about being a
+    residue. Stephens describes bounded uncorrelated jitter as the category the industry
+    uses for organising its ignorance: it is everything bounded that is not correlated
+    with the victim's own data, which in practice means everything we do not know how to
+    measure separately.</p>
+
+    <p>The reason the category exists at all is an assumption: that the only
+    <em>unbounded</em> contribution is the Gaussian random part. Everything else must be
+    bounded, so anything bounded that cannot be attributed to the data or to a known tone
+    gets swept here.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel r">
+            <h4>Crosstalk, chiefly</h4>
+            <p>Deterministic &mdash; it is an exact function of the aggressor's data
+            &mdash; but that data is not the victim's, so nothing in the victim's
+            receiver can predict it. Bounded by the aggressor's swing. The best example
+            of the category, and the subject of deck 10.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Why it defeats measurement</h4>
+            <p>Most techniques for extracting random jitter assume that anything smooth
+            and wide in the tails is Gaussian. Bounded uncorrelated jitter is often both,
+            so it is counted as random &mdash; and random jitter is multiplied by
+            fourteen at $10^{-12}$ while bounded jitter is not.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>What to do about it</h4>
+            <p>Measure with the aggressors quiet and again with them driven. The
+            difference is the contribution that the acronyms cannot name, and it is
+            usually easier to obtain than to argue about which branch of the tree it
+            belongs on.</p>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>Interactive: The Real Distribution, From the Channel</h2>
+    <p>Data-dependent jitter is the one branch that can be computed exactly rather than
+    measured, because it is a deterministic function of the preceding bits and the
+    channel's own pulse response. Enumerating every pattern of a given depth and finding
+    the zero crossing for each gives the distribution outright.</p>
+
+    <p>It is worth looking at, because it is emphatically <em>not</em> two impulses,
+    which is what the model in deck 08 will assume it is.</p>
+
+    <div class="canvas-wrap">
+        <canvas id="ddj-plot" width="780" height="300"></canvas>
+        <div class="legend">
+            <span><i style="background:#c084fc"></i>zero-crossing positions, all patterns</span>
+        </div>
+    </div>
+
+    <div class="metric-grid" id="ddj-metrics"></div>
+
+    <p class="note" id="ddj-note"></p>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>Stationarity, the Assumption Nobody States</h2>
+    <p>Every jitter measurement, and every model built on one, assumes the process is
+    <strong>stationary</strong> &mdash; that a measurement taken over a suitable interval
+    gives the same answer whenever it is started. It is listed as one of the five
+    assumptions behind the dual-Dirac model and it is almost never mentioned in a
+    specification.</p>
+
+    <p>It is also the assumption most obviously untrue of a real system.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel r">
+            <h4>Things that are not stationary</h4>
+            <p>A rail that droops when a neighbouring core wakes up. A spread-spectrum
+            clock, deliberately modulated. A thermal drift over minutes. A link that
+            retrains. A fan that changes speed. Each makes the jitter distribution a
+            function of when you looked.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Why it matters for the tails</h4>
+            <p>Extrapolating to $10^{-12}$ means claiming to know a distribution's
+            behaviour a long way past where it was sampled. If the distribution itself
+            moves on a timescale comparable with the measurement, the extrapolated tail
+            is not a tail of anything &mdash; it is a mixture of several distributions,
+            which is broader than any of them.</p>
+        </div>
+    </div>
+
+    <p>The practical consequence is that a jitter number should carry its observation
+    interval alongside its error ratio, and that a measurement repeated at a different
+    time is worth more than the same measurement continued for longer.</p>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>Two Frequency Domains, Easily Confused</h2>
+    <p>The word "frequency" does two jobs in this subject and mixing them produces
+    confident nonsense.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The signal's frequency domain</h4>
+            <p>The harmonic content of the waveform itself: the spectrum whose Nyquist
+            frequency is half the symbol rate, whose loss is the subject of deck 03, and
+            which the equaliser shapes. For a 28 GBd lane this domain runs to tens of
+            gigahertz.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>The jitter frequency domain</h4>
+            <p>The spectrum of the <em>deviations</em> from the ideal phase &mdash; the
+            single-sideband phase-noise spectrum. Its axis is the offset from the
+            carrier, and the interesting region runs from kilohertz to tens of
+            megahertz: six orders of magnitude below the other one.</p>
+        </div>
+    </div>
+
+    <p>A clock recovery circuit's bandwidth is a frequency in the <em>second</em> domain.
+    It says nothing about the signal's bandwidth and everything about which part of the
+    phase-noise spectrum reaches the sampler. That distinction is the whole of deck 09,
+    and getting it wrong is how a perfectly good oscillator comes to be blamed for a
+    problem it has no part in.</p>
+
+    <div class="callout">
+        <div class="callout-label">A useful check</div>
+        <p>If a statement about jitter would change meaning when the data rate changed
+        but the oscillator did not, it is probably about the first domain. If it would
+        change when the clock recovery loop changed but the data rate did not, it is
+        about the second.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>Cheat Sheet</h2>
+    <table>
+        <thead><tr><th>Idea</th><th>Statement</th><th>Consequence</th></tr></thead>
+        <tbody>
+            <tr><td>Rule 1 and 5</td><td>It is about the bit error ratio</td><td>Anything not connected to an error ratio is decoration</td></tr>
+            <tr><td>Rule 2</td><td>Total jitter can only be measured on a BERT</td><td>Everything else is an estimate from a model</td></tr>
+            <tr><td>Rule 3</td><td>Measurement compares a test clock with a reference</td><td>Deck 09: which reference decides the answer</td></tr>
+            <tr><td>Rule 4</td><td>Timing and amplitude noise are not separable</td><td>Deck 10: the separation fails above about 10 Gb/s</td></tr>
+            <tr><td>Total jitter</td><td>$\mathrm{TJ(BER)} = T_b - \text{opening}$</td><td>A function of the error ratio, not a number</td></tr>
+            <tr><td>Measurement time</td><td>$\approx 10/\mathrm{BER}$ bits</td><td>Six minutes at $10^{-12}$ and 28 GBd; four days at $10^{-15}$</td></tr>
+            <tr><td>Random</td><td>Unbounded, Gaussian, adds in quadrature</td><td>Multiplied by $2Q$; fixed by a better oscillator</td></tr>
+            <tr><td>Deterministic</td><td>Bounded, adds arithmetically</td><td>Enters once, whatever the error ratio</td></tr>
+            <tr><td>BUJ</td><td>Bounded, uncorrelated, unmeasured</td><td>Usually crosstalk; usually counted as random by mistake</td></tr>
+            <tr><td>Stationarity</td><td>Assumed everywhere, stated nowhere</td><td>Repeat the measurement rather than lengthen it</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<script>
+const C={bg:'#0d1117',grid:'#21262d',dim:'#8b949e',accent:'#c084fc',teal:'#34d399',
+         cyan:'#22d3ee',pink:'#f472b6',amber:'#fbbf24',text:'#e6edf3'};
+function hidpi(id){const c=document.getElementById(id);if(!c)return null;
+  const r=window.devicePixelRatio||1,w=c.width,h=c.height;
+  c.style.width=w+'px';c.style.height=h+'px';c.width=Math.round(w*r);c.height=Math.round(h*r);
+  const x=c.getContext('2d');x.scale(r,r);return{ctx:x,w,h};}
+function clear(ctx,w,h){ctx.fillStyle=C.bg;ctx.fillRect(0,0,w,h);}
+function label(ctx,t,x,y,c2,s,a){ctx.fillStyle=c2||C.dim;
+  ctx.font=(s||10)+"px 'JetBrains Mono', monospace";ctx.textAlign=a||'left';
+  ctx.fillText(t,x,y);ctx.textAlign='left';}
+function dashed(ctx,on){ctx.setLineDash(on?[4,4]:[]);}
+function metric(l,v){return '<div class="metric"><div class="metric-label">'+l+
+  '</div><div class="metric-value">'+v+'</div></div>';}
+function axes(ctx,w,h,p,xl,yl){ctx.strokeStyle=C.grid;ctx.lineWidth=1;ctx.beginPath();
+  ctx.moveTo(p.l,p.t);ctx.lineTo(p.l,h-p.b);ctx.lineTo(w-p.r,h-p.b);ctx.stroke();
+  if(xl)label(ctx,xl,(p.l+w-p.r)/2,h-6,C.dim,10,'center');
+  if(yl)label(ctx,yl,p.l,p.t-10,C.dim,10,'left');}
+function dur(s){if(s<1e-3)return (s*1e6).toFixed(0)+' µs';
+  if(s<1)return (s*1e3).toFixed(0)+' ms'; if(s<120)return s.toFixed(1)+' s';
+  if(s<7200)return (s/60).toFixed(1)+' min'; if(s<172800)return (s/3600).toFixed(1)+' h';
+  if(s<3.15e7)return (s/86400).toFixed(1)+' days'; return (s/3.15e7).toFixed(1)+' years';}
+
+/* ---- 01 rules ---- */
+(function(){
+  const g=document.getElementById('rules-grid'); if(!g||!SI.rules)return;
+  const cls=['accent-border','y','g','r','accent-border'];
+  g.innerHTML=SI.rules.map(function(r,i){
+    return '<div class="diagram-panel '+cls[i]+'"><h4>Rule '+(i+1)+'</h4><p>'+r+'</p></div>';
+  }).join('');
+})();
+
+/* ---- 02 Q metrics ---- */
+(function(){
+  const el=document.getElementById('q-metrics'); if(!el||!SI.q)return;
+  let html='';
+  ['1e-06','1e-09','1e-12','1e-15'].forEach(function(k){
+    const v=SI.q[k]; if(v===undefined)return;
+    html+=metric('Q for '+k.replace('1e-','10⁻'),v.toFixed(3));});
+  el.innerHTML=html;
+})();
+
+/* ---- 03 BERT ---- */
+(function(){
+  const H=hidpi('bt-plot'); if(!H||!SI.bert_28)return;
+  const rows=SI.bert_28;
+  const sl=document.getElementById('bt-rate'); sl.max=rows.length-1;
+  function draw(i){
+    const {ctx,w,h}=H; clear(ctx,w,h);
+    const p={l:60,r:16,t:20,b:42};
+    const X=j=>p.l+(j+0.5)/rows.length*(w-p.l-p.r);
+    const LO=-4,HI=8;
+    const Y=s=>h-p.b-(Math.log10(Math.max(s,1e-4))-LO)/(HI-LO)*(h-p.t-p.b);
+    axes(ctx,w,h,p,'target bit error ratio','time to a confident measurement');
+    for(let e=LO;e<=HI;e+=2){ctx.strokeStyle=C.grid;ctx.beginPath();
+      ctx.moveTo(p.l,Y(Math.pow(10,e)));ctx.lineTo(w-p.r,Y(Math.pow(10,e)));ctx.stroke();
+      label(ctx,dur(Math.pow(10,e)),p.l-6,Y(Math.pow(10,e))+3,C.dim,9,'right');}
+    ctx.strokeStyle=C.amber;dashed(ctx,true);ctx.beginPath();
+    ctx.moveTo(p.l,Y(28800));ctx.lineTo(w-p.r,Y(28800));ctx.stroke();dashed(ctx,false);
+    label(ctx,'one working day',w-p.r-4,Y(28800)-5,C.amber,9,'right');
+    ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.beginPath();
+    rows.forEach(function(r,j){const px=X(j),py=Y(r.seconds);
+      j?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+    ctx.stroke();
+    rows.forEach(function(r,j){ctx.fillStyle=j===i?C.text:C.accent;ctx.beginPath();
+      ctx.arc(X(j),Y(r.seconds),j===i?5.5:3.5,0,6.3);ctx.fill();
+      label(ctx,'10'+String(Math.round(Math.log10(r.ber))).replace('-','⁻'),
+            X(j),h-p.b+15,C.dim,9,'center');});
+    const r=rows[i];
+    document.getElementById('bt-rate-val').textContent='BER 10'+
+      String(Math.round(Math.log10(r.ber))).replace('-','⁻');
+    document.getElementById('bt-metrics').innerHTML=
+      metric('bits required',r.bits.toExponential(1))+
+      metric('one error every',dur(r.one_error_every_s))+
+      metric('confident measurement',dur(r.seconds))+
+      metric('at 2.5 Gb/s instead',dur(r.seconds*28.0/2.5));
+    const v=document.getElementById('bt-verdict');
+    v.className='verdict '+(r.seconds<28800?'ok':'bad');
+    v.textContent=r.seconds<28800
+      ? 'measurable inside a working day at 28 Gb/s'
+      : 'takes '+dur(r.seconds)+' at 28 Gb/s — this is why the model in deck 08 exists';
+    document.getElementById('bt-note').textContent=
+      'Confidence needs roughly ten errors, so about ten divided by the error ratio in '+
+      'bits. At 28 Gb/s an error ratio of 10⁻¹² means one error every '+
+      dur(rows[2].one_error_every_s)+' and a defensible measurement in '+
+      dur(rows[2].seconds)+'. Three decades further down costs a thousand times as '+
+      'long, which is the wall every jitter standard is written against.';
+  }
+  sl.addEventListener('input',function(){draw(+sl.value);});
+  draw(3);
+})();
+
+/* ---- 04 Q table ---- */
+(function(){
+  const t=document.getElementById('q-table'); if(!t||!SI.q)return;
+  let html='<thead><tr><th>Error ratio</th><th>Communications Q</th>'+
+    '<th>Multiplier on RJ, 2Q</th></tr></thead><tbody>';
+  Object.keys(SI.q).sort(function(a,b){return parseFloat(b)-parseFloat(a);})
+    .forEach(function(k){
+      const q=SI.q[k];
+      html+='<tr><td>'+k.replace('1e-','10<sup>−')+'</sup></td><td>'+
+        q.toFixed(3)+'</td><td>'+(2*q).toFixed(3)+'</td></tr>';});
+  html+='</tbody>'; t.innerHTML=html;
+})();
+
+/* ---- 05 taxonomy ---- */
+(function(){
+  const t=document.getElementById('tax-table'); if(!t||!SI.taxonomy)return;
+  let html='<thead><tr><th>Component</th><th>Bounded?</th><th>Correlated with the victim data?</th>'+
+    '<th>Where it comes from</th><th>What fixes it</th></tr></thead><tbody>';
+  SI.taxonomy.forEach(function(r){
+    html+='<tr><td><strong>'+r.acronym+'</strong> &mdash; '+r.name+'</td><td class="'+
+      (r.bounded?'ok':'bad')+'">'+(r.bounded?'bounded':'unbounded')+'</td><td>'+
+      r.correlated+'</td><td>'+r.source+'</td><td>'+r.fixed_by+'</td></tr>';});
+  html+='</tbody>'; t.innerHTML=html;
+})();
+
+/* ---- 07 DDJ distribution ---- */
+(function(){
+  const H=hidpi('ddj-plot'); if(!H||!SI.ddj)return;
+  const d=SI.ddj; const {ctx,w,h}=H; clear(ctx,w,h);
+  const p={l:52,r:16,t:20,b:40};
+  const bins=d.bins, cnt=d.hist;
+  const x0=bins[0], x1=bins[bins.length-1];
+  const X=v=>p.l+(v-x0)/(x1-x0)*(w-p.l-p.r);
+  const ym=Math.max.apply(null,cnt)*1.12;
+  const Y=v=>h-p.b-v/ym*(h-p.t-p.b);
+  axes(ctx,w,h,p,'zero-crossing position, unit intervals from the mean','patterns');
+  for(let i=0;i<cnt.length;i++){
+    const a=X(bins[i]), b=X(bins[i+1]);
+    ctx.fillStyle=C.accent; ctx.fillRect(a+0.5,Y(cnt[i]),Math.max(b-a-1,1),h-p.b-Y(cnt[i]));}
+  for(let g=-1;g<=1;g+=0.25){ if(g<x0||g>x1) continue;
+    label(ctx,g.toFixed(2),X(g),h-p.b+14,C.dim,9,'center');}
+  document.getElementById('ddj-metrics').innerHTML=
+    metric('patterns enumerated',d.n)+
+    metric('spread, peak to peak',d.pp_ui.toFixed(3)+' UI')+
+    metric('in picoseconds',d.pp_ps.toFixed(1)+' ps')+
+    metric('standard deviation',d.std_ui.toFixed(4)+' UI');
+  document.getElementById('ddj-note').textContent=
+    'Every one of the '+d.n+' histories of the preceding bits produces its own crossing, '+
+    'and they spread over '+d.pp_ui.toFixed(2)+' unit intervals on the unequalised '+
+    'backplane channel. The distribution is lumpy, asymmetric and bounded — nothing '+
+    'like the two impulses the dual-Dirac model replaces it with, which is exactly why '+
+    'deck 08 has to be careful about what that model’s output means.';
+})();
+</script>
+
+<div class="footer">
+    <p>Deck 7 of eleven in <a href="../">Signal Integrity &amp; High-Speed
+    Digital Design</a>. Every figure on this page is computed by
+    <a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">si_models/deck07</a>
+    and embedded as data; nothing is typed in by hand.</p>
+    <div class="seriesnav"><a href="../01-transmission-lines/">01 Transmission lines</a><a href="../02-return-paths/">02 Return paths</a><a href="../03-materials-and-loss/">03 Materials and loss</a><a href="../04-vias-and-discontinuities/">04 Vias</a><a href="../05-differential-signalling/">05 Differential pairs</a><a href="../06-crosstalk/">06 Crosstalk</a><a href="#" class="here">07 Total jitter</a><a href="../08-dual-dirac/">08 Dual-Dirac</a><a href="../09-clock-recovery/">09 Clock recovery</a><a href="../10-amplitude-noise/">10 Amplitude noise</a><a href="../11-pdn-impedance/">11 PDN impedance</a><a href="../12-planes-and-ecology/">12 Planes and ecology</a><a href="../13-measuring-low-impedance/">13 Measuring milliohms</a><a href="../14-pi-meets-si/">14 PI meets SI</a><a href="../15-timing-and-budgets/">15 Timing budgets</a><a href="../16-measurement-and-correlation/">16 Measurement</a><a href="../17-com-and-compliance/">17 COM and compliance</a></div>
+    <p style="margin-top:.6rem">Single-page HTML &middot; KaTeX-rendered maths &middot; no build step.
+    <a href="https://github.com/BrendanJamesLynskey/Signal_Integrity">Source on GitHub</a></p>
+</div>
+
+</body>
+</html>

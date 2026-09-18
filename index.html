@@ -48,8 +48,13 @@
            font-size:0.72rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
   .badge-complete { background:rgba(16,185,129,.12); color:var(--green);
                     border:1px solid rgba(16,185,129,.25); }
-  .section-title { font-family:'Playfair Display',serif; font-size:1.3rem; color:#fafafa;
-                   margin:2.5rem 0 0.9rem; }
+  .section-title { font-family:'Playfair Display',serif; font-size:1.45rem; color:#fafafa;
+                   margin:2.6rem 0 0.35rem; display:flex; align-items:baseline;
+                   gap:0.8rem; flex-wrap:wrap; }
+  .section-title .secrange { font-family:'JetBrains Mono',monospace; font-size:0.72rem;
+                   color:var(--accent); letter-spacing:0.12em; text-transform:uppercase;
+                   font-weight:700; }
+  .secintro { color:var(--dim); font-size:0.88rem; margin:0 0 1rem; max-width:62ch; }
   .panel { background:var(--surface); border:1px solid var(--border); border-radius:10px;
            padding:1.25rem 1.5rem; font-size:0.9rem; color:var(--text2); }
   .panel ul { margin:0.5rem 0 0 1.1rem; }
@@ -78,15 +83,17 @@
   <div class="icon">⬡</div>
   <div class="subtitle">Computed, interactive, verified</div>
   <h1>Signal Integrity &amp; High-Speed Digital Design</h1>
-  <p>Eleven decks on getting a signal from one chip to another intact &mdash; the physics
-  of the channel, the mechanisms that close an eye, and the arithmetic a standard uses to
-  decide a channel is legal.</p>
+  <p>Seventeen decks in five sections on getting a signal from one chip to another
+  intact &mdash; the physics of the channel, the mechanisms that close an eye, and the
+  arithmetic a standard uses to decide a channel is legal.</p>
   <p>Every number on every slide is computed by a model in
   <a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">si_models</a> and
   embedded as data. Nothing is asserted by hand, and the models are checked against
   published worked examples wherever one exists.</p>
 </header>
 
+<h2 class="section-title">The passive channel<span class="secrange">decks 01&ndash;04</span></h2>
+<p class="secintro">What a transmission line is, where the return current flows, what the materials do to the signal, and what happens at the one feature made by drilling.</p>
 <div class="grid">
   <div class="card">
     <div class="num" style="color:#22d3ee">01</div>
@@ -112,6 +119,10 @@
     <div class="action"><a class="btn btn-launch" href="04-vias-and-discontinuities/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
+</div>
+<h2 class="section-title">The signal on it<span class="secrange">decks 05&ndash;06</span></h2>
+<p class="secintro">Why every fast link is differential, and the one impairment no equaliser can remove.</p>
+<div class="grid">
   <div class="card">
     <div class="num" style="color:#a78bfa">05</div>
     <div class="info"><h2>Differential Signalling</h2><p>Why every fast link is differential, what tight coupling really costs, and how symmetry is lost.</p></div>
@@ -124,45 +135,96 @@
     <div class="action"><a class="btn btn-launch" href="06-crosstalk/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
+</div>
+<h2 class="section-title">Jitter<span class="secrange">decks 07&ndash;10</span></h2>
+<p class="secintro">Organised around Ransom Stephens's five rules: it is about the bit error ratio, total jitter can only be measured on a bit error ratio tester, measurement is always a comparison against a reference clock, and timing noise and amplitude noise are not really separable.</p>
+<div class="grid">
   <div class="card">
-    <div class="num" style="color:#60a5fa">07</div>
-    <div class="info"><h2>Power Integrity as a Signal-Integrity Problem</h2><p>How a disturbance on the supply becomes an error at the receiver, and why more capacitors can make it worse.</p></div>
-    <div class="action"><a class="btn btn-launch" href="07-power-integrity/">Open</a>
+    <div class="num" style="color:#c084fc">07</div>
+    <div class="info"><h2>Total Jitter and the Bit Error Ratio</h2><p>Why jitter is defined against an error ratio, what a bit error ratio tester does that nothing else can, and the decomposition tree done properly.</p></div>
+    <div class="action"><a class="btn btn-launch" href="07-total-jitter/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#c084fc">08</div>
-    <div class="info"><h2>Jitter</h2><p>Bounded and unbounded, measured and extrapolated, and the bathtub curve that flatters a link it should not.</p></div>
-    <div class="action"><a class="btn btn-launch" href="08-jitter/">Open</a>
+    <div class="num" style="color:#a855f7">08</div>
+    <div class="info"><h2>The Dual-Dirac Model and Its Limits</h2><p>Five assumptions, a fitting parameter that is not the peak-to-peak deterministic jitter, and the tails a measurement cannot reach.</p></div>
+    <div class="action"><a class="btn btn-launch" href="08-dual-dirac/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#2dd4bf">09</div>
+    <div class="num" style="color:#8b5cf6">09</div>
+    <div class="info"><h2>Clock Recovery, the Reference Clock and Tolerance</h2><p>Every jitter measurement compares a test clock against a reference. Which reference, how much it tracks, and what the tolerance mask is really testing.</p></div>
+    <div class="action"><a class="btn btn-launch" href="09-clock-recovery/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#d946ef">10</div>
+    <div class="info"><h2>Crosstalk, Amplitude Noise and the Two-Dimensional View</h2><p>Timing noise and amplitude noise are not separable, the separation fails above about ten gigabits per second, and crosstalk is where it fails first.</p></div>
+    <div class="action"><a class="btn btn-launch" href="10-amplitude-noise/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+</div>
+<h2 class="section-title">Power integrity<span class="secrange">decks 11&ndash;14</span></h2>
+<p class="secintro">The power delivery network as an impedance, as an ecology of resonances, as something that has to be measured in milliohms, and finally as a source of signal-integrity failures.</p>
+<div class="grid">
+  <div class="card">
+    <div class="num" style="color:#60a5fa">11</div>
+    <div class="info"><h2>The Power Delivery Network as an Impedance</h2><p>Target impedance and what the rule is worth, real capacitors, and why the number of parts is set by inductance rather than by capacitance.</p></div>
+    <div class="action"><a class="btn btn-launch" href="11-pdn-impedance/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#3b82f6">12</div>
+    <div class="info"><h2>Planes, Cavities and the PDN Ecology</h2><p>Spreading inductance, cavity resonances, and the Bandini Mountain — the peak the board cannot reach because it is behind the package.</p></div>
+    <div class="action"><a class="btn btn-launch" href="12-planes-and-ecology/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#0ea5e9">13</div>
+    <div class="info"><h2>Measuring Low Impedance</h2><p>Why a reflection measurement stops at about an ohm, how the two-port shunt-through method reaches a milliohm, and the ground loop that ruins it.</p></div>
+    <div class="action"><a class="btn btn-launch" href="13-measuring-low-impedance/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+  <div class="card">
+    <div class="num" style="color:#38bdf8">14</div>
+    <div class="info"><h2>Power Integrity Meets Signal Integrity</h2><p>The routes by which a disturbance on the supply becomes an error at a receiver — switching noise, cavity coupling, and supply-induced jitter.</p></div>
+    <div class="action"><a class="btn btn-launch" href="14-pi-meets-si/">Open</a>
+      <span class="badge badge-complete">complete</span></div>
+  </div>
+</div>
+<h2 class="section-title">The verdict<span class="secrange">decks 15&ndash;17</span></h2>
+<p class="secintro">Whether the timing closes, whether the measurements can be believed, and how a standard turns all of it into a pass or a fail.</p>
+<div class="grid">
+  <div class="card">
+    <div class="num" style="color:#2dd4bf">15</div>
     <div class="info"><h2>Timing, Flight Time and the Budget</h2><p>Flight time is not propagation delay, and the arithmetic that ended the wide parallel bus.</p></div>
-    <div class="action"><a class="btn btn-launch" href="09-timing-and-budgets/">Open</a>
+    <div class="action"><a class="btn btn-launch" href="15-timing-and-budgets/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#fb923c">10</div>
+    <div class="num" style="color:#fb923c">16</div>
     <div class="info"><h2>Measurement, De-embedding and Correlation</h2><p>Where S-parameters come from, how they are damaged, and what correlation honestly means.</p></div>
-    <div class="action"><a class="btn btn-launch" href="10-measurement-and-correlation/">Open</a>
+    <div class="action"><a class="btn btn-launch" href="16-measurement-and-correlation/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#4ade80">11</div>
+    <div class="num" style="color:#4ade80">17</div>
     <div class="info"><h2>Channel Operating Margin and Compliance</h2><p>How a standard decides a channel is legal, run on the same channel the equalisation deck could not close.</p></div>
-    <div class="action"><a class="btn btn-launch" href="11-com-and-compliance/">Open</a>
+    <div class="action"><a class="btn btn-launch" href="17-com-and-compliance/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
 </div>
 
-<h2 class="section-title">What has been checked against published work</h2>
+<h2 class="section-title">What has been checked</h2>
 <div class="panel">
 <p>A model that agrees only with itself is not worth much. Every cross-check the series
 makes against an independently published result is listed here, with the disagreement.
+The last rows, marked <em>internal</em>, are not checks against anybody else: they are
+places where two different computations in the series have to agree with each other,
+and the quoted worst disagreement excludes them.
 The worst is 2.44&nbsp;per&nbsp;cent.</p>
 <table>
-<thead><tr><th>Quantity</th><th>This series</th><th>Published</th><th>Difference</th><th>Source</th></tr></thead>
+<thead><tr><th>Quantity</th><th>This series</th><th>Reference value</th><th>Difference</th><th>Source</th></tr></thead>
 <tbody>
 <tr><td>zdiff w0.15 s0.15</td><td>102.62</td><td>102.44</td><td class="ok">+0.18&nbsp;%</td><td>Cohn 1955, exact coupled-stripline result</td></tr>
 <tr><td>zdiff w0.15 s0.30</td><td>112.32</td><td>112.39</td><td class="ok">-0.06&nbsp;%</td><td>Cohn 1955, exact coupled-stripline result</td></tr>
@@ -184,6 +246,7 @@ The worst is 2.44&nbsp;per&nbsp;cent.</p>
 <tr><td>r ac f0</td><td>76.742</td><td>76.74</td><td class="ok">+0.00&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
 <tr><td>r dc</td><td>12.645</td><td>12.64</td><td class="ok">+0.04&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
 <tr><td>v0</td><td>1.4457e+08</td><td>1.4457e+08</td><td class="ok">+0.00&nbsp;%</td><td>Johnson & Graham, Advanced Black Magic 2003, sec 3.10</td></tr>
+<tr><td>droop vs zpeak</td><td>23.241</td><td>24.876</td><td class="ok">-6.57&nbsp;%</td><td>internal: deepest transient droop per amp against the peak of the impedance profile (time domain vs frequency domain)</td></tr>
 </tbody></table></div>
 
 <h2 class="section-title">Long-form companion</h2>
@@ -202,10 +265,12 @@ is, where the return current flows, what the materials do to the signal, and wha
 at the one feature that is made by drilling.</li>
 <li><strong>Decks 05&ndash;06</strong> are about the signal on it &mdash; why it is
 differential, and the one impairment no equaliser can remove.</li>
-<li><strong>Decks 07&ndash;09</strong> are about the environment: the supply, the clock,
-and the timing budget the whole thing has to fit into.</li>
-<li><strong>Decks 10&ndash;11</strong> ask whether any of it can be believed, and how a
-standard turns it into a verdict.</li>
+<li><strong>Decks 07&ndash;10</strong> are about jitter &mdash; the quantity a serial
+link is finally judged on, and the one most often mis-stated.</li>
+<li><strong>Decks 11&ndash;14</strong> are about power integrity, ending with the four
+routes by which a disturbance on a rail reaches the eye.</li>
+<li><strong>Deck 15</strong> assembles a timing budget; <strong>decks 16&ndash;17</strong>
+ask whether any of it can be believed, and how a standard turns it into a verdict.</li>
 </ul>
 <p style="margin-top:0.8rem">Most decks are worked against one channel &mdash; the
 28.8&nbsp;inch backplane characterised in
@@ -222,17 +287,17 @@ numbers in another.</p>
 <tr><td><a href="https://brendanjameslynskey.github.io/SerDes_Equalisation/">Equalisation in High-Speed Serial Links</a></td><td>The worked channel this series keeps returning to, taken from S-parameters to a closed link budget</td></tr>
 <tr><td><a href="https://brendanjameslynskey.github.io/Matrix_Methods_Network_Parameters/">Matrix Methods in Network Parameters</a></td><td>The S-, Z- and Y-parameter algebra behind every cascade here</td></tr>
 <tr><td><a href="https://brendanjameslynskey.github.io/Matrix_Concepts_Digital_Filters/">Matrix Concepts in Digital Filters</a></td><td>The optimal-tap theory behind every equaliser</td></tr>
-<tr><td><a href="https://brendanjameslynskey.github.io/Kramers_Kronig_Relations/">Kramers&ndash;Kronig Relations</a></td><td>The causality constraint decks 03 and 10 both lean on</td></tr>
+<tr><td><a href="https://brendanjameslynskey.github.io/Kramers_Kronig_Relations/">Kramers&ndash;Kronig Relations</a></td><td>The causality constraint decks 03 and 16 both lean on</td></tr>
 <tr><td><a href="https://github.com/BrendanJamesLynskey/Interview_High_Speed_Serial_Links">High-Speed Serial Links &mdash; interview preparation</a></td><td>The written companion: notes and worked problems on the same ground</td></tr>
-<tr><td><a href="https://github.com/BrendanJamesLynskey/Interview_LPDDRx_Layout">LPDDRx Layout &mdash; interview preparation</a></td><td>The parallel-bus side of deck 09</td></tr>
-<tr><td><a href="https://github.com/BrendanJamesLynskey/SoC">Modern SoC Design</a></td><td>The silicon side: deck 04 on SerDes, 09 on power delivery, 13 on clocks</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/Interview_LPDDRx_Layout">LPDDRx Layout &mdash; interview preparation</a></td><td>The parallel-bus side of deck 15</td></tr>
+<tr><td><a href="https://github.com/BrendanJamesLynskey/SoC">Modern SoC Design</a></td><td>The silicon side: its deck 04 on SerDes, 09 on power delivery, 13 on clocks</td></tr>
 <tr><td><a href="https://github.com/BrendanJamesLynskey/Hardware">Hardware</a></td><td>The index this series sits in</td></tr>
 </tbody>
 </table>
 </div>
 
 <footer>
-  <p>130 slides across eleven decks &middot; single-page HTML &middot;
+  <p>188 slides across seventeen decks &middot; single-page HTML &middot;
   KaTeX-rendered maths &middot; no build step</p>
   <p style="margin-top:.5rem"><a href="https://github.com/BrendanJamesLynskey/Signal_Integrity">Source
   on GitHub</a> &middot; models in
