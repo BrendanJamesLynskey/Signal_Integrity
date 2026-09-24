@@ -11,7 +11,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
     <style>
-        :root { --bg-primary:#0a0a0a; --bg-card:#0d1117; --bg-code:#161b22; --text-primary:#e6edf3; --text-secondary:#8b949e; --accent:#fbbf24; --accent-dim:#fbbf2444; --accent-glow:#fbbf2433; --accent-2:#f472b6; --accent-3:#fbbf24; --accent-4:#34d399; --border:#21262d; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
+        :root { --bg-primary:#121a1b; --bg-card:#172122; --bg-code:#1e292a; --text-primary:#ede5d9; --text-secondary:#8e9a96; --accent:#eea465; --accent-dim:#eea46544; --accent-glow:#eea46533; --accent-2:#d78da4; --accent-3:#eea465; --accent-4:#6fbba9; --border:#293636; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
         body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:17px;line-height:1.7;overflow-x:hidden}
@@ -61,7 +61,7 @@
         .control-row input[type="range"]{flex:1;min-width:150px;accent-color:var(--accent)}
         .control-row .val{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:80px;text-align:right}
         .btn{font-family:var(--font-mono);font-size:.8rem;padding:.4rem .9rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);border-radius:4px;cursor:pointer}
-        .btn:hover{background:rgba(251,191,36,.25)}
+        .btn:hover{background:rgba(238,164,101,.25)}
         .btn.secondary{background:var(--bg-code);color:var(--text-secondary);border-color:var(--border)}
         .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-top:.75rem}
         .metric{background:var(--bg-code);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;text-align:center}
@@ -81,14 +81,14 @@
         th{background:var(--bg-code);color:var(--accent);font-weight:600;text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--border);font-family:var(--font-display)}
         td{padding:.5rem .85rem;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
         tr:last-child td{border-bottom:none}
-        tr:nth-child(even) td{background:rgba(13,17,23,.5)}
+        tr:nth-child(even) td{background:rgba(23,33,34,.5)}
         @media (max-width:640px){.slide{padding:3rem 1rem;min-height:auto}.slide-number{font-size:3rem;top:1.5rem;right:1rem}.slide h2{font-size:1.5rem}.diagram-grid.cols-2,.diagram-grid.cols-3{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
 
         .legend{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:.6rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-secondary)}
         .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:middle}
         .verdict{font-family:var(--font-mono);font-size:.8rem;padding:.35rem .7rem;border-radius:4px;display:inline-block;margin-top:.5rem}
-        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(52,211,153,.12)}
-        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(244,114,182,.12)}
+        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(111,187,169,.12)}
+        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(215,141,164,.12)}
         .canvas-wrap canvas{image-rendering:auto}
         .metric-label .katex,.callout-label .katex,.series-label .katex,
         .metric-label .katex *,.callout-label .katex *{text-transform:none}
@@ -218,8 +218,8 @@
     <div class="canvas-wrap">
         <canvas id="sd-plot" width="780" height="260"></canvas>
         <div class="legend">
-            <span><i style="background:#fbbf24"></i>skin depth in copper</span>
-            <span><i style="background:#8b949e"></i>foil thicknesses</span>
+            <span><i style="background:#eea465"></i>skin depth in copper</span>
+            <span><i style="background:#8e9a96"></i>foil thicknesses</span>
         </div>
     </div>
 
@@ -261,9 +261,9 @@
     <div class="canvas-wrap">
         <canvas id="rf-plot" width="780" height="290"></canvas>
         <div class="legend">
-            <span><i style="background:#fbbf24"></i>Hammerstad</span>
-            <span><i style="background:#f472b6"></i>Huray</span>
-            <span><i style="background:#8b949e"></i>Hammerstad's ceiling of 2</span>
+            <span><i style="background:#eea465"></i>Hammerstad</span>
+            <span><i style="background:#d78da4"></i>Huray</span>
+            <span><i style="background:#8e9a96"></i>Hammerstad's ceiling of 2</span>
         </div>
     </div>
 
@@ -344,9 +344,9 @@
     <div class="canvas-wrap">
         <canvas id="lm-plot" width="780" height="300"></canvas>
         <div class="legend">
-            <span><i style="background:#22d3ee"></i>conductor</span>
-            <span><i style="background:#f472b6"></i>dielectric</span>
-            <span><i style="background:#fbbf24"></i>total</span>
+            <span><i style="background:#95c7db"></i>conductor</span>
+            <span><i style="background:#d78da4"></i>dielectric</span>
+            <span><i style="background:#eea465"></i>total</span>
         </div>
     </div>
 
@@ -377,9 +377,9 @@
     <div class="canvas-wrap">
         <canvas id="ca-plot" width="780" height="290"></canvas>
         <div class="legend">
-            <span><i style="background:#34d399"></i>causal model</span>
-            <span><i style="background:#f472b6"></i>constant Dk and Df</span>
-            <span><i style="background:#8b949e"></i>time of flight</span>
+            <span><i style="background:#6fbba9"></i>causal model</span>
+            <span><i style="background:#d78da4"></i>constant Dk and Df</span>
+            <span><i style="background:#8e9a96"></i>time of flight</span>
         </div>
     </div>
 
@@ -408,8 +408,8 @@
     <div class="canvas-wrap">
         <canvas id="ds-plot" width="780" height="300"></canvas>
         <div class="legend">
-            <span><i style="background:#22d3ee"></i>Dk</span>
-            <span><i style="background:#f472b6"></i>Df</span>
+            <span><i style="background:#95c7db"></i>Dk</span>
+            <span><i style="background:#d78da4"></i>Df</span>
         </div>
     </div>
 
@@ -472,8 +472,8 @@
     <div class="canvas-wrap">
         <canvas id="fw-plot" width="780" height="280"></canvas>
         <div class="legend">
-            <span><i style="background:#f472b6"></i>differential to common conversion</span>
-            <span><i style="background:#fbbf24"></i>Nyquist, 14 GHz</span>
+            <span><i style="background:#d78da4"></i>differential to common conversion</span>
+            <span><i style="background:#eea465"></i>Nyquist, 14 GHz</span>
         </div>
     </div>
 </section>
@@ -494,7 +494,7 @@
     <div class="canvas-wrap">
         <canvas id="fa-plot" width="780" height="280"></canvas>
         <div class="legend">
-            <span><i style="background:#34d399"></i>residual skew over 10 inches</span>
+            <span><i style="background:#6fbba9"></i>residual skew over 10 inches</span>
         </div>
     </div>
 
@@ -538,8 +538,8 @@
 </section>
 
 <script>
-const C={bg:'#0d1117',grid:'#21262d',dim:'#8b949e',accent:'#fbbf24',teal:'#34d399',
-         cyan:'#22d3ee',pink:'#f472b6',amber:'#fbbf24',text:'#e6edf3'};
+const C={bg:'#172122',grid:'#293636',dim:'#8e9a96',accent:'#eea465',teal:'#6fbba9',
+         cyan:'#95c7db',pink:'#d78da4',amber:'#eea465',text:'#ede5d9'};
 function hidpi(id){const c=document.getElementById(id);if(!c)return null;
   const r=window.devicePixelRatio||1,w=c.width,h=c.height;
   c.style.width=w+'px';c.style.height=h+'px';c.width=Math.round(w*r);c.height=Math.round(h*r);

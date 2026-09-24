@@ -8,20 +8,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  :root { --bg:#0a0a0f; --surface:#131318; --border:#23232a; --text:#d4d4d8;
-          --text2:#a1a1aa; --dim:#71717a; --accent:#22d3ee; --green:#10b981;
-          --purple:#8b5cf6; --blue:#60a5fa; --red:#ef4444; }
+  :root { --bg:#121a1b; --surface:#192324; --border:#273434; --text:#d4d4ca;
+          --text2:#9ea8a4; --dim:#5f6c6b; --accent:#95c7db; --green:#5aa393;
+          --purple:#876daf; --blue:#83a9c9; --red:#ce4138; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: 16px; scroll-behavior: smooth; }
   body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text);
          line-height:1.6; min-height:100vh; }
   a { color: var(--blue); text-decoration: none; }
-  a:hover { color: #93c5fd; }
+  a:hover { color: #abc5db; }
   .container { max-width: 980px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
   header { text-align: center; margin-bottom: 2.5rem; }
   header .icon { font-size: 3rem; margin-bottom: 0.5rem; }
   header h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:2.6rem;
-              letter-spacing:-0.02em; color:#fafafa; margin-bottom:0.3rem; line-height:1.1; }
+              letter-spacing:-0.02em; color:#f5efe6; margin-bottom:0.3rem; line-height:1.1; }
   header .subtitle { font-size:1rem; color:var(--accent); font-weight:500;
                      letter-spacing:0.15em; text-transform:uppercase; margin-bottom:1rem; }
   header p { color: var(--text2); max-width: 680px; margin: 0 auto 0.8rem;
@@ -31,24 +31,24 @@
           gap:1.2rem; background:var(--surface); border:1px solid var(--border);
           border-radius:10px; padding:1.25rem 1.5rem;
           transition:border-color .2s, box-shadow .2s; }
-  .card:hover { border-color: rgba(34,211,238,.3); box-shadow: 0 0 20px rgba(34,211,238,.06); }
+  .card:hover { border-color: rgba(149,199,219,.3); box-shadow: 0 0 20px rgba(149,199,219,.06); }
   .card .num { font-family:'Playfair Display',serif; font-weight:900; font-size:1.8rem;
                text-align:center; line-height:1; }
   .card .info h2 { font-family:'Playfair Display',serif; font-weight:700; font-size:1.15rem;
-                   color:#fafafa; margin-bottom:0.2rem; }
+                   color:#f5efe6; margin-bottom:0.2rem; }
   .card .info p { font-size:0.82rem; color:var(--dim); line-height:1.4; }
   .card .action { text-align:right; white-space:nowrap; display:flex;
                   flex-direction:column; align-items:flex-end; gap:0.4rem; }
   .btn { display:inline-block; padding:0.45em 1.3em; border-radius:6px; font-weight:700;
          font-size:0.85rem; transition:background .2s, transform .1s; }
   .btn:active { transform: scale(0.97); }
-  .btn-launch { background: var(--accent); color:#0a0a0f; }
-  .btn-launch:hover { background:#67e8f9; color:#0a0a0f; }
+  .btn-launch { background: var(--accent); color:#121a1b; }
+  .btn-launch:hover { background:#add9e8; color:#121a1b; }
   .badge { display:inline-block; padding:0.25em 0.8em; border-radius:999px;
            font-size:0.72rem; font-weight:700; font-family:'JetBrains Mono',monospace; }
-  .badge-complete { background:rgba(16,185,129,.12); color:var(--green);
-                    border:1px solid rgba(16,185,129,.25); }
-  .section-title { font-family:'Playfair Display',serif; font-size:1.45rem; color:#fafafa;
+  .badge-complete { background:rgba(90,163,147,.12); color:var(--green);
+                    border:1px solid rgba(90,163,147,.25); }
+  .section-title { font-family:'Playfair Display',serif; font-size:1.45rem; color:#f5efe6;
                    margin:2.6rem 0 0.35rem; display:flex; align-items:baseline;
                    gap:0.8rem; flex-wrap:wrap; }
   .section-title .secrange { font-family:'JetBrains Mono',monospace; font-size:0.72rem;
@@ -96,25 +96,25 @@
 <p class="secintro">What a transmission line is, where the return current flows, what the materials do to the signal, and what happens at the one feature made by drilling.</p>
 <div class="grid">
   <div class="card">
-    <div class="num" style="color:#22d3ee">01</div>
+    <div class="num" style="color:#95c7db">01</div>
     <div class="info"><h2>The Transmission Line and the Physical Channel</h2><p>When a trace stops being a wire, where the fifty-ohm convention comes from, and what a reflection actually is.</p></div>
     <div class="action"><a class="btn btn-launch" href="01-transmission-lines/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#34d399">02</div>
+    <div class="num" style="color:#6fbba9">02</div>
     <div class="info"><h2>Return Paths and Reference Planes</h2><p>Every signal current is a loop. Where the other half of it flows, and what happens when the board will not let it.</p></div>
     <div class="action"><a class="btn btn-launch" href="02-return-paths/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#fbbf24">03</div>
+    <div class="num" style="color:#eea465">03</div>
     <div class="info"><h2>Materials, Loss and Causality</h2><p>Copper roughness, dielectric loss, and why a constant dielectric constant describes a material that cannot exist.</p></div>
     <div class="action"><a class="btn btn-launch" href="03-materials-and-loss/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#f59e0b">04</div>
+    <div class="num" style="color:#d88954">04</div>
     <div class="info"><h2>Vias, Connectors and Discontinuities</h2><p>The only part of a channel made by drilling, and the one that decides whether the link runs at 28 gigabaud.</p></div>
     <div class="action"><a class="btn btn-launch" href="04-vias-and-discontinuities/">Open</a>
       <span class="badge badge-complete">complete</span></div>
@@ -124,13 +124,13 @@
 <p class="secintro">Why every fast link is differential, and the one impairment no equaliser can remove.</p>
 <div class="grid">
   <div class="card">
-    <div class="num" style="color:#a78bfa">05</div>
+    <div class="num" style="color:#a896c7">05</div>
     <div class="info"><h2>Differential Signalling</h2><p>Why every fast link is differential, what tight coupling really costs, and how symmetry is lost.</p></div>
     <div class="action"><a class="btn btn-launch" href="05-differential-signalling/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#f472b6">06</div>
+    <div class="num" style="color:#d78da4">06</div>
     <div class="info"><h2>Crosstalk</h2><p>The impairment no equaliser can remove, and the one place near-end and far-end coupling genuinely differ.</p></div>
     <div class="action"><a class="btn btn-launch" href="06-crosstalk/">Open</a>
       <span class="badge badge-complete">complete</span></div>
@@ -140,25 +140,25 @@
 <p class="secintro">Organised around Ransom Stephens's five rules: it is about the bit error ratio, total jitter can only be measured on a bit error ratio tester, measurement is always a comparison against a reference clock, and timing noise and amplitude noise are not really separable.</p>
 <div class="grid">
   <div class="card">
-    <div class="num" style="color:#c084fc">07</div>
+    <div class="num" style="color:#b297cc">07</div>
     <div class="info"><h2>Total Jitter and the Bit Error Ratio</h2><p>Why jitter is defined against an error ratio, what a bit error ratio tester does that nothing else can, and the decomposition tree done properly.</p></div>
     <div class="action"><a class="btn btn-launch" href="07-total-jitter/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#a855f7">08</div>
+    <div class="num" style="color:#9673b8">08</div>
     <div class="info"><h2>The Dual-Dirac Model and Its Limits</h2><p>Five assumptions, a fitting parameter that is not the peak-to-peak deterministic jitter, and the tails a measurement cannot reach.</p></div>
     <div class="action"><a class="btn btn-launch" href="08-dual-dirac/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#8b5cf6">09</div>
+    <div class="num" style="color:#876daf">09</div>
     <div class="info"><h2>Clock Recovery, the Reference Clock and Tolerance</h2><p>Every jitter measurement compares a test clock against a reference. Which reference, how much it tracks, and what the tolerance mask is really testing.</p></div>
     <div class="action"><a class="btn btn-launch" href="09-clock-recovery/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#d946ef">10</div>
+    <div class="num" style="color:#b07cc6">10</div>
     <div class="info"><h2>Crosstalk, Amplitude Noise and the Two-Dimensional View</h2><p>Timing noise and amplitude noise are not separable, the separation fails above about ten gigabits per second, and crosstalk is where it fails first.</p></div>
     <div class="action"><a class="btn btn-launch" href="10-amplitude-noise/">Open</a>
       <span class="badge badge-complete">complete</span></div>
@@ -168,25 +168,25 @@
 <p class="secintro">The power delivery network as an impedance, as an ecology of resonances, as something that has to be measured in milliohms, and finally as a source of signal-integrity failures.</p>
 <div class="grid">
   <div class="card">
-    <div class="num" style="color:#60a5fa">11</div>
+    <div class="num" style="color:#83a9c9">11</div>
     <div class="info"><h2>The Power Delivery Network as an Impedance</h2><p>Target impedance and what the rule is worth, real capacitors, and why the number of parts is set by inductance rather than by capacitance.</p></div>
     <div class="action"><a class="btn btn-launch" href="11-pdn-impedance/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#3b82f6">12</div>
+    <div class="num" style="color:#5c8ab5">12</div>
     <div class="info"><h2>Planes, Cavities and the PDN Ecology</h2><p>Spreading inductance, cavity resonances, and the Bandini Mountain — the peak the board cannot reach because it is behind the package.</p></div>
     <div class="action"><a class="btn btn-launch" href="12-planes-and-ecology/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#0ea5e9">13</div>
+    <div class="num" style="color:#74a2bf">13</div>
     <div class="info"><h2>Measuring Low Impedance</h2><p>Why a reflection measurement stops at about an ohm, how the two-port shunt-through method reaches a milliohm, and the ground loop that ruins it.</p></div>
     <div class="action"><a class="btn btn-launch" href="13-measuring-low-impedance/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#38bdf8">14</div>
+    <div class="num" style="color:#8ab7d2">14</div>
     <div class="info"><h2>Power Integrity Meets Signal Integrity</h2><p>The routes by which a disturbance on the supply becomes an error at a receiver — switching noise, cavity coupling, and supply-induced jitter.</p></div>
     <div class="action"><a class="btn btn-launch" href="14-pi-meets-si/">Open</a>
       <span class="badge badge-complete">complete</span></div>
@@ -196,19 +196,19 @@
 <p class="secintro">Whether the timing closes, whether the measurements can be believed, and how a standard turns all of it into a pass or a fail.</p>
 <div class="grid">
   <div class="card">
-    <div class="num" style="color:#2dd4bf">15</div>
+    <div class="num" style="color:#79bdb5">15</div>
     <div class="info"><h2>Timing, Flight Time and the Budget</h2><p>Flight time is not propagation delay, and the arithmetic that ended the wide parallel bus.</p></div>
     <div class="action"><a class="btn btn-launch" href="15-timing-and-budgets/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#fb923c">16</div>
+    <div class="num" style="color:#d6845c">16</div>
     <div class="info"><h2>Measurement, De-embedding and Correlation</h2><p>Where S-parameters come from, how they are damaged, and what correlation honestly means.</p></div>
     <div class="action"><a class="btn btn-launch" href="16-measurement-and-correlation/">Open</a>
       <span class="badge badge-complete">complete</span></div>
   </div>
   <div class="card">
-    <div class="num" style="color:#4ade80">17</div>
+    <div class="num" style="color:#6fc8ad">17</div>
     <div class="info"><h2>Channel Operating Margin and Compliance</h2><p>How a standard decides a channel is legal, run on the same channel the equalisation deck could not close.</p></div>
     <div class="action"><a class="btn btn-launch" href="17-com-and-compliance/">Open</a>
       <span class="badge badge-complete">complete</span></div>

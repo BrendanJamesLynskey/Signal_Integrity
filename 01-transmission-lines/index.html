@@ -11,7 +11,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
     <style>
-        :root { --bg-primary:#0a0a0a; --bg-card:#0d1117; --bg-code:#161b22; --text-primary:#e6edf3; --text-secondary:#8b949e; --accent:#22d3ee; --accent-dim:#22d3ee44; --accent-glow:#22d3ee33; --accent-2:#f472b6; --accent-3:#fbbf24; --accent-4:#34d399; --border:#21262d; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
+        :root { --bg-primary:#121a1b; --bg-card:#172122; --bg-code:#1e292a; --text-primary:#ede5d9; --text-secondary:#8e9a96; --accent:#95c7db; --accent-dim:#95c7db44; --accent-glow:#95c7db33; --accent-2:#d78da4; --accent-3:#eea465; --accent-4:#6fbba9; --border:#293636; --font-display:'Space Grotesk',sans-serif; --font-mono:'JetBrains Mono','Fira Code',monospace; --font-body:'Inter',sans-serif; --max-width:900px; }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
         body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:17px;line-height:1.7;overflow-x:hidden}
@@ -61,7 +61,7 @@
         .control-row input[type="range"]{flex:1;min-width:150px;accent-color:var(--accent)}
         .control-row .val{font-family:var(--font-mono);font-size:.85rem;color:var(--accent);min-width:80px;text-align:right}
         .btn{font-family:var(--font-mono);font-size:.8rem;padding:.4rem .9rem;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);border-radius:4px;cursor:pointer}
-        .btn:hover{background:rgba(34,211,238,.25)}
+        .btn:hover{background:rgba(149,199,219,.25)}
         .btn.secondary{background:var(--bg-code);color:var(--text-secondary);border-color:var(--border)}
         .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-top:.75rem}
         .metric{background:var(--bg-code);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;text-align:center}
@@ -81,14 +81,14 @@
         th{background:var(--bg-code);color:var(--accent);font-weight:600;text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--border);font-family:var(--font-display)}
         td{padding:.5rem .85rem;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
         tr:last-child td{border-bottom:none}
-        tr:nth-child(even) td{background:rgba(13,17,23,.5)}
+        tr:nth-child(even) td{background:rgba(23,33,34,.5)}
         @media (max-width:640px){.slide{padding:3rem 1rem;min-height:auto}.slide-number{font-size:3rem;top:1.5rem;right:1rem}.slide h2{font-size:1.5rem}.diagram-grid.cols-2,.diagram-grid.cols-3{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
 
         .legend{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:.6rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-secondary)}
         .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:middle}
         .verdict{font-family:var(--font-mono);font-size:.8rem;padding:.35rem .7rem;border-radius:4px;display:inline-block;margin-top:.5rem}
-        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(52,211,153,.12)}
-        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(244,114,182,.12)}
+        .verdict.ok{color:var(--accent-4);border:1px solid var(--accent-4);background:rgba(111,187,169,.12)}
+        .verdict.bad{color:var(--accent-2);border:1px solid var(--accent-2);background:rgba(215,141,164,.12)}
         .canvas-wrap canvas{image-rendering:auto}
         .metric-label .katex,.callout-label .katex,.series-label .katex,
         .metric-label .katex *,.callout-label .katex *{text-transform:none}
@@ -296,9 +296,9 @@
     <div class="canvas-wrap">
         <canvas id="cx-plot" width="780" height="300"></canvas>
         <div class="legend">
-            <span><i style="background:#f472b6"></i>reciprocal of attenuation &mdash; peaks at minimum loss</span>
-            <span><i style="background:#34d399"></i>power handling &mdash; peaks at maximum power</span>
-            <span><i style="background:#fbbf24"></i>the geometric mean of the two</span>
+            <span><i style="background:#d78da4"></i>reciprocal of attenuation &mdash; peaks at minimum loss</span>
+            <span><i style="background:#6fbba9"></i>power handling &mdash; peaks at maximum power</span>
+            <span><i style="background:#eea465"></i>the geometric mean of the two</span>
         </div>
     </div>
 
@@ -385,9 +385,9 @@
     <div class="canvas-wrap">
         <canvas id="bo-plot" width="780" height="290"></canvas>
         <div class="legend">
-            <span><i style="background:#22d3ee"></i>voltage at the receiver</span>
-            <span><i style="background:#8b949e"></i>final value</span>
-            <span><i style="background:#fbbf24"></i>receiver threshold band</span>
+            <span><i style="background:#95c7db"></i>voltage at the receiver</span>
+            <span><i style="background:#8e9a96"></i>final value</span>
+            <span><i style="background:#eea465"></i>receiver threshold band</span>
         </div>
     </div>
 
@@ -469,8 +469,8 @@
     <div class="canvas-wrap">
         <canvas id="td-plot" width="780" height="300"></canvas>
         <div class="legend">
-            <span><i style="background:#22d3ee"></i>impedance the instrument reports</span>
-            <span><i style="background:#8b949e"></i>reference impedance</span>
+            <span><i style="background:#95c7db"></i>impedance the instrument reports</span>
+            <span><i style="background:#8e9a96"></i>reference impedance</span>
         </div>
     </div>
 </section>
@@ -487,8 +487,8 @@
     <div class="canvas-wrap">
         <canvas id="tr-plot" width="780" height="270"></canvas>
         <div class="legend">
-            <span><i style="background:#22d3ee"></i>impedance the instrument reports</span>
-            <span><i style="background:#f472b6"></i>true impedance, 38 &Omega;</span>
+            <span><i style="background:#95c7db"></i>impedance the instrument reports</span>
+            <span><i style="background:#d78da4"></i>true impedance, 38 &Omega;</span>
         </div>
     </div>
 
@@ -625,9 +625,9 @@
 
 <script>
 /* ---------- shared canvas helpers -------------------------------------- */
-const C = { bg:'#0d1117', panel:'#161b22', grid:'#21262d', dim:'#8b949e',
-            accent:'#22d3ee', teal:'#34d399', cyan:'#22d3ee', pink:'#f472b6',
-            amber:'#fbbf24', text:'#e6edf3' };
+const C = { bg:'#172122', panel:'#1e292a', grid:'#293636', dim:'#8e9a96',
+            accent:'#95c7db', teal:'#6fbba9', cyan:'#95c7db', pink:'#d78da4',
+            amber:'#eea465', text:'#ede5d9' };
 
 function hidpi(id) {
     const c = document.getElementById(id);
@@ -785,7 +785,7 @@ function axes(ctx, w, h, pad, xlab, ylab) {
             ctx.moveTo(pad.l, Y(y)); ctx.lineTo(w - pad.r, Y(y)); ctx.stroke();
             label(ctx, y.toFixed(1), pad.l - 6, Y(y) + 3, C.dim, 9, 'right');
         }
-        ctx.fillStyle = 'rgba(251,191,36,.10)';
+        ctx.fillStyle = 'rgba(238,164,101,.10)';
         ctx.fillRect(pad.l, Y(vf * 0.7), w - pad.l - pad.r, Y(vf * 0.3) - Y(vf * 0.7));
 
         ctx.strokeStyle = C.dim; dashed(ctx, true); ctx.beginPath();
@@ -931,16 +931,16 @@ function axes(ctx, w, h, pad, xlab, ylab) {
     const X = f => pad.l + (Math.log10(f) - Math.log10(FLO)) /
                    (Math.log10(FHI) - Math.log10(FLO)) * (w - pad.l - pad.r);
     const bands = [
-        [FLO, r.f_lc, 'lumped', '#3b4252'],
-        [r.f_lc, r.f_skin, 'LC', '#1f6feb'],
-        [r.f_skin, r.f_diel, 'skin effect', '#238636'],
-        [r.f_diel, r.f_wg, 'dielectric loss', '#9e6a03'],
-        [r.f_wg, FHI, 'waveguide', '#8b2252']];
+        [FLO, r.f_lc, 'lumped', '#3c4a49'],
+        [r.f_lc, r.f_skin, 'LC', '#4173a0'],
+        [r.f_skin, r.f_diel, 'skin effect', '#286c56'],
+        [r.f_diel, r.f_wg, 'dielectric loss', '#85522d'],
+        [r.f_wg, FHI, 'waveguide', '#723b4a']];
     bands.forEach(function (b) {
         ctx.fillStyle = b[3];
         ctx.fillRect(X(b[0]), pad.t, X(b[1]) - X(b[0]), h - pad.t - pad.b);
         const mid = (X(b[0]) + X(b[1])) / 2;
-        if (X(b[1]) - X(b[0]) > 55) label(ctx, b[2], mid, pad.t + 26, '#e6edf3', 11, 'center');
+        if (X(b[1]) - X(b[0]) > 55) label(ctx, b[2], mid, pad.t + 26, '#ede5d9', 11, 'center');
     });
     [[r.f_lc, 'LC'], [r.f_skin, 'skin'], [r.f_diel, 'dielectric'], [r.f_wg, 'waveguide']]
         .forEach(function (m) {
