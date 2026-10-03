@@ -164,6 +164,7 @@ Indexed together under [Signal Integrity & High-Speed Digital Design](https://gi
 | [LPDDRx Layout — interview preparation](https://github.com/BrendanJamesLynskey/Interview_LPDDRx_Layout) | The parallel-bus side of deck 09 — memory interface layout, skew and termination |
 | [Modern SoC Design](https://github.com/BrendanJamesLynskey/SoC) | The silicon side. Deck 04 covers SerDes and I/O, deck 01 packaging, deck 09 power delivery (the complement to deck 07 here), deck 13 clocks and resets |
 | [Arm AMBA](https://github.com/BrendanJamesLynskey/AMBA) | What the traffic becomes once it is on-chip |
+| [Introduction to Simulation](https://github.com/BrendanJamesLynskey/Introduction_to_Simulation) | Where the field solving, circuit models and channel simulation in this series sit among the levels of engineering simulation, from field solvers to system models |
 | [Hardware](https://github.com/BrendanJamesLynskey/Hardware) | The index this series sits in |
 
 ---
