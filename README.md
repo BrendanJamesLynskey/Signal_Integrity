@@ -1,3 +1,7 @@
+<!-- portfolio-strip:start (brief 40) -->
+<sub>**Brendan Lynskey** · [Portfolio home](https://brendanjameslynskey.github.io/) · [Interactive sites](https://brendanjameslynskey.github.io/#sites)</sub>
+<!-- portfolio-strip:end -->
+
 # ⬡ Signal Integrity & High-Speed Digital Design
 
 Seventeen interactive slide decks on getting a signal from one chip to another intact — the physics of the channel, the mechanisms that close an eye, and the arithmetic a standard uses to decide a channel is legal.
